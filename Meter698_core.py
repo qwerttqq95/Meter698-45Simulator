@@ -122,7 +122,7 @@ def Analysis(code):
                     else:
                         num = 1
                 print("白名单判断 ", black_white_SA_address, num)
-                if num == -1:
+                if num != 1:
                     print('通过')
                 else:
                     print('不通过')
@@ -151,7 +151,7 @@ def Analysis(code):
                                 start += 1
                             print("whitelist: ", whitelist)
                             for x in whitelist:
-                                x_makelist = int(Comm.list2str(Comm.makelist(str(x))[find_aa:]))
+                                x_makelist = int(Comm.list2str(Comm.makelist(str(x).zfill(12))[find_aa:]))
                                 print('matching', black_white_SA_address_makelist_int, x_makelist)
                                 if black_white_SA_address_makelist_int == x_makelist:
                                     print('match')
@@ -261,6 +261,8 @@ def Information(num, detail, APDU):
             if returnvalue == '5006':
                 frozenSign = 3
             reCSD = RSD(APDU[5:])
+            if reCSD is None:
+                return 0
             RCSD(reCSD[0], reCSD[1:])
             # print('LargeOAD-1', LargeOAD)
             # print('返回项数量', relen)
@@ -472,7 +474,7 @@ def RSD(remain):
         print('Selector 09')
         return remain[2:]
     else:
-        print('Selector ERROR', remain[0])
+        print('Selector ERROR: ', remain[0])
 
 
 def RCSD(remain_len, args):
