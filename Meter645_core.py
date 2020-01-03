@@ -204,14 +204,18 @@ def deal_receive(message):
                         if start <= int(Comm.list2str(address[::-1])) <= end:
                             print('检测到白名单地址范围')
                             num = -1
+                            break
                         else:
                             num = 1
+                    elif add == Comm.list2str(address[::-1]):
+                        print('发现白名单')
+                        break
                     else:
                         num = 1
                 print("白名单判断 ", Comm.list2str(address[::-1]))
-                if num == -1:
+                if num != 1:
                     print('通过')
-                elif num == 1:
+                else:
                     print('不通过')
                     return None
             break
@@ -242,12 +246,13 @@ def deal_receive(message):
         if re.match("0610", OI):
             TIME = Comm.list2str(message[15:20])
             print("time:", TIME, message[14])
-            times = int(message[14], 16) - 33
+            times = int(hex(int(message[14], 16) - 51)[2:].zfill(2))
             print("times:", times)
             returnstr = TIME + plus33(a[0]) * times
         else:
             returnstr = plus33(a[0])  # Date!!!!
         L = hex(4 + len(Comm.makelist(returnstr)))[2:].zfill(2)
+        print("长度:",hex(4 + len(Comm.makelist(returnstr)))[2:])
         text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
         print('Sending:', text)
     return (text, OI + " " + a[1], a[0])
