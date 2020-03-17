@@ -265,7 +265,8 @@ def Information(num, detail, APDU):
             reCSD = RSD(APDU[5:])
             if reCSD is None:
                 return 0
-            RCSD(reCSD[0], reCSD[1:])
+            if RCSD(reCSD[0], reCSD[1:]) is None:
+                return None
             # print('LargeOAD-1', LargeOAD)
             # print('返回项数量', relen)
             datatype = num + detail + service_code
@@ -282,7 +283,6 @@ def Information(num, detail, APDU):
                     LargeOAD = datatype + str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '01000000'
                 else:
                     LargeOAD = str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '0101'
-                    # print('data_list', data_list)
                     LargeOAD = datatype + LargeOAD + Comm.list_append(data_list) + '0000'
 
             else:
@@ -345,7 +345,8 @@ def Information(num, detail, APDU):
                 else:
                     SecType = '00'
 
-                Information(realAPDU[0], realAPDU[1], realAPDU[2:])
+                if Information(realAPDU[0], realAPDU[1], realAPDU[2:]) is None:
+                    return None
 
             else:
                 print('非随机数无法读取')
@@ -372,6 +373,7 @@ def SequenceOfLen(remain):
 
 def A_ResultRecord_SEQUENCE(remain):
     OAD = str(remain[0] + remain[1])
+    print("oad: "+OAD)
     if OAD == '5004' or OAD == '5002' or OAD == '5006':
         print('冻结')
         return OAD
@@ -424,7 +426,8 @@ def Event(APDU):
                 LargeOAD = message + '0101' + LargeOAD + '0000'
 
         ReturnMessage().head()
-        print('组成', LargeOAD)
+        # print('组成', LargeOAD)
+        return 1
     else:
         print('其他')
         return 0
@@ -487,6 +490,8 @@ def RCSD(remain_len, args):
     print('lens', lens)
     while lens > 0:
         args = CSD_CHOICE(args)
+        if args is None:
+            return None
         lens -= 1
     return args
 
@@ -495,7 +500,8 @@ def CSD_CHOICE(args):
     type = args[0]
     if type == '00':
         OAD = str(args[1] + args[2])
-        OAD_SEQUENCE(OAD, args[3], args[4])
+        if OAD_SEQUENCE(OAD, args[3], args[4]) is None:
+            return None
         if args == []:
             print('CSD_CHOICE is NULL')
         return args[5:]
@@ -523,10 +529,15 @@ def OAD_SEQUENCE(OI, unsigned1, unsigned2):
         global frozenSign
         if frozenSign != 0:
             ReturnMessage().composefrozen(value.lower())
+            return 1
         else:
-            ReturnMessage().compose_data(value.lower())
+            if ReturnMessage().compose_data(value.lower()) is None:
+                return None
+            else:
+                return 1
     except:
         traceback.print_exc(file=open('bug.txt', 'a+'))
+        return None
 
 
 def Data(DataDescribe, args):
@@ -788,7 +799,7 @@ class ReturnMessage():
         self.HCS = self.HCS[2:] + self.HCS[0:2]
         if len(self.HCS) == 2:
             self.HCS = self.HCS + '00'
-        # print(self.HCS)
+        print("HCS: ",self.HCS)
         LargeOAD = APDU_len[2:] + APDU_len[0:2] + self.total + self.HCS + LargeOAD
         self.full_message = Comm.strto0x(Comm.makelist(LargeOAD))
         self.FCS = str(hex(Comm.pppfcs16(0xffff, self.full_message, len(self.full_message)))).zfill(4)[2:]
@@ -797,7 +808,9 @@ class ReturnMessage():
         self.FCS = self.FCS[2:] + self.FCS[0:2]
         if len(self.FCS) == 2:
             self.FCS = self.FCS + '00'
-        # print(self.FCS)
+        if self.FCS[0] == "x":
+            self.FCS = '0'+self.FCS[1:]
+        print("FCS: ",self.FCS)
         LargeOAD = '68' + LargeOAD + self.FCS + '16'
         print('发送报文:', LargeOAD, '\n')
 
@@ -828,6 +841,7 @@ class ReturnMessage():
         except:
             print('未知数据标识: ', OI)
             traceback.print_exc(file=open('bug.txt', 'a+'))
+            return None
 
         if OI == '40010200' or OI == '40020200' or OI == '202a0200':
             st = ['202a0200/40010200/40020200', '目标服务器地址/通信地址/表号', '']

@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.55')
+        self.setWindowTitle('模拟表程序 v1.56')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -149,13 +149,15 @@ class MainWindow(QMainWindow):
 class RuningTime(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+        self.sec = 0
 
     def run(self):
-        self.start_ = time.time()
+        # self.start_ = time.time()
         while 1:
             time.sleep(1)
-            self.end = time.time()
-            a = int(self.end - self.start_)
+            self.sec += 1
+            # self.end = start_ + sec
+            a = int(self.sec)
             if 3600 > a > 60:
                 b = a // 60
                 MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 分钟 ' + str(a % 60) + ' 秒')
@@ -166,7 +168,7 @@ class RuningTime(threading.Thread):
                 MainWindow.ui.label_5.setText('运行时间: ' + str(a) + ' 秒')
 
     def res(self):
-        self.start_ = time.time()
+        self.sec = 0
 
 
 class Connect(threading.Thread):
@@ -300,6 +302,17 @@ class Connect(threading.Thread):
 
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
+        if sent == 1:
+            message = "抄表地址在黑名单内不与返回或存在不支持项,具体原因在bug.txt中查看"
+            MainWindow._signal_text.emit(message)
+            MainWindow.log_session(message)
+            LargeOAD = ''
+            data_list = []
+            data = ''
+            frozenSign = 0
+            self.Meter.ReturnMessage().clear_OI()
+            MainWindow._signal_text.emit('--------------------------------')
+            MainWindow.log_session('--------------------------------')
         if sent == 3:
             message = "开启白名单以启用搜698表"
             MainWindow._signal_text.emit(message)

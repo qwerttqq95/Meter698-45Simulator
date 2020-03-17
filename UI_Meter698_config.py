@@ -342,7 +342,7 @@ class Ui_Dialog(object):
         self.groupBox.setTitle(_translate("Dialog", "抄表log导出为:"))
         self.pushButton_5.setText(_translate("Dialog", "txt格式"))
         self.groupBox_3.setTitle(_translate("Dialog", "About："))
-        self.label_2.setText(_translate("Dialog", "Version：V1.4"))
+        self.label_2.setText(_translate("Dialog", "Version：V1.5"))
         self.label_3.setText(_translate("Dialog", "Frame：190909"))
         self.groupBox_5.setTitle(_translate("Dialog", "645说明:"))
         self.textEdit_3.setHtml(_translate("Dialog",
