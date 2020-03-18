@@ -303,7 +303,7 @@ class Connect(threading.Thread):
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
         if sent == 1:
-            message = "抄表地址在黑名单内不与返回或存在不支持项,具体原因在bug.txt中查看"
+            message = "抄表地址在黑名单内不予返回或存在不支持项,具体原因在打印中查看"
             MainWindow._signal_text.emit(message)
             MainWindow.log_session(message)
             LargeOAD = ''

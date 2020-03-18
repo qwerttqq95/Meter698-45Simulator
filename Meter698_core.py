@@ -239,7 +239,9 @@ def Information(num, detail, APDU):
 
         elif detail == '02':
             print(detail, '读取若干个对象属性请求 (GetRequestNormalList) ')
-            SequenceOfLen(APDU[1:])
+            if SequenceOfLen(APDU[1:]) is None:
+                print("读取若干个对象属性请求 None")
+                return None
             LargeOAD = LargeOAD + '0000'
             ReturnMessage().reAPDUtype(num + detail + service_code)
             ReturnMessage().head()
@@ -248,10 +250,14 @@ def Information(num, detail, APDU):
         elif detail == '03':
             print(detail, '读取一个记录型对象属性请求 (GetRequestRecord) ')
             returnvalue = A_ResultRecord_SEQUENCE(APDU[1:5])
+            if returnvalue is None:
+                print("读取一个记录型对象属性请求 None")
+                return None
             global frozenSign, data_list
             if returnvalue == 0:
                 print('抄事件')
                 if Event(APDU[1:]) is None:
+                    print("抄事件 None")
                     return None
                 return 0
             if returnvalue == '5002':
@@ -266,6 +272,7 @@ def Information(num, detail, APDU):
             if reCSD is None:
                 return 0
             if RCSD(reCSD[0], reCSD[1:]) is None:
+                print("RCSD is None")
                 return None
             # print('LargeOAD-1', LargeOAD)
             # print('返回项数量', relen)
@@ -346,6 +353,7 @@ def Information(num, detail, APDU):
                     SecType = '00'
 
                 if Information(realAPDU[0], realAPDU[1], realAPDU[2:]) is None:
+                    print("Information None")
                     return None
 
             else:
@@ -361,6 +369,9 @@ def SequenceOfLen(remain):
     remain = remain[1:]
     while lenth > 0:
         returnvalue = A_ResultRecord_SEQUENCE(remain[0:4])
+        if returnvalue is None:
+            print('returnvalue is None2')
+            return None
         if returnvalue == 0:
             print('0502抄事件临时处理')
             ReturnMessage().save(['事件响应', Comm.list2str(remain[0:4]), ''])
@@ -369,7 +380,7 @@ def SequenceOfLen(remain):
 
         remain = remain[4:]
         lenth -= 1
-
+    return 1
 
 def A_ResultRecord_SEQUENCE(remain):
     OAD = str(remain[0] + remain[1])
@@ -383,7 +394,11 @@ def A_ResultRecord_SEQUENCE(remain):
     if OAD[0] == '3':
         return 0
     else:
-        OAD_SEQUENCE(OAD, remain[2], remain[3])
+        if OAD_SEQUENCE(OAD, remain[2], remain[3]) is None:
+            print("OAD_SEQUENCE is None")
+            return None
+        else:
+            return 1
 
 
 def Event(APDU):
@@ -402,6 +417,7 @@ def Event(APDU):
             message = message + Comm.list2str(remain[0:5])
             value = Comm.list2str(remain[1:5]).zfill(4)
             if event_compose_data(value) is None:
+                print("event_compose_data None")
                 return None
             remain = remain[5:]
         global event_stat
@@ -491,6 +507,7 @@ def RCSD(remain_len, args):
     while lens > 0:
         args = CSD_CHOICE(args)
         if args is None:
+            print("arg is None")
             return None
         lens -= 1
     return args
@@ -501,6 +518,7 @@ def CSD_CHOICE(args):
     if type == '00':
         OAD = str(args[1] + args[2])
         if OAD_SEQUENCE(OAD, args[3], args[4]) is None:
+            print("OAD_SEQUENCE(OAD, args[3], args[4]) is None")
             return None
         if args == []:
             print('CSD_CHOICE is NULL')
@@ -532,11 +550,15 @@ def OAD_SEQUENCE(OI, unsigned1, unsigned2):
             return 1
         else:
             if ReturnMessage().compose_data(value.lower()) is None:
+                traceback.print_exc(file=open('bug.txt', 'a+'))
+                print("ReturnMessage().compose_data(value.lower()) is None")
                 return None
+
             else:
                 return 1
     except:
         traceback.print_exc(file=open('bug.txt', 'a+'))
+        print("???")
         return None
 
 
@@ -892,6 +914,7 @@ class ReturnMessage():
             self.message = '40000200' + '01' + times
             print('message', self.message)
             LargeOAD = LargeOAD + self.message
+            return 1
         elif text[0] == OI:
             print('text', text)
             self.save(text)
@@ -909,8 +932,10 @@ class ReturnMessage():
             self.message = text[0] + '01' + text[2]
             print('message', self.message, 'text[2]', text[2])
             LargeOAD = LargeOAD + self.message
+            return 1
         else:
             print('compose_data ERROR')
+            return 0
 
     def Re_add(self):
         global _max, trans
