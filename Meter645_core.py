@@ -32,6 +32,8 @@ def conctrlcode(code):
         recode = int(code, 16) + 128
         recode = hex(recode)[2:]
         return recode
+    if code == "14":
+        return "94"
 
 
 def data_len(code):
@@ -152,6 +154,7 @@ def returnframe(add, reconctrlcode, L, D, N):
 def B_W_add(stat_, add):
     global black_white_SA_address, black, white, stat
     stat = stat_
+    print('changed stat',stat)
     if stat == 0:
         black = []
         white = []
@@ -166,21 +169,31 @@ def B_W_add(stat_, add):
 
 
 def deal_receive(message):
-    if message[8] == "13":
-        text = "68 01 00 00 00 00 00 68 93 06 34 33 33 33 33 33 9D 16".replace(' ', '')
-        return (text, '0', '0')
+    # if message[8] == "13":
+    #     text = "68 01 00 00 00 00 00 68 93 06 34 33 33 33 33 33 9D 16".replace(' ', '')
+    #     return (text, '0', '0')
     while 1:
         if message[0] == '68':
-            global address
+            global address,white,stat
             address = message[1:7]
             if address == ['aa', 'aa', 'aa', 'aa', 'aa', 'aa'] or address == ['99', '99', '99', '99', '99', '99']:
-                return None
+                if stat != 2:
+                    return '2'
+                reconctrlcode = '93'
+                L = '06'
+                D = '343333333333'
+                add = Comm.makelist(white[0])[::-1]
+                text = '68' + Comm.list2str(add) + '68' + reconctrlcode + L + D
+                cs = CS(strto0x(Comm.makelist(text)), None)
+                text = text + cs + '16'
+                print("返回发送",text)
+                return (text,"645广播")
             for x in address:
                 if x.find('a') > -1:
                     print('find a re None')
                     return None
             # insert
-            global stat
+            print("stat ",stat)
             if stat == 1:
                 for add in black:
                     print('add: ', add)
@@ -223,6 +236,14 @@ def deal_receive(message):
             del message[0]
 
     reconctrlcode = conctrlcode(message[8])
+    if reconctrlcode == "94":
+        returnstr = ''
+        L = ''
+        reconctrlcode = '9400'
+        D = ''
+        text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
+        print('Sending:', text)
+        return (text,'SET', 'TRUE')
     datasign = message[10:14]
     D = Comm.list2str(datasign)
     cs = CS(strto0x(message[0:-2]), message[-2])

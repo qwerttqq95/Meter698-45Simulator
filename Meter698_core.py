@@ -8,8 +8,24 @@ def check(code):
     lenth = int(code[2] + code[1], 16)  # 长度
     if len(code) >= lenth + 2:
         if code[lenth + 1] == '16':
-            print('check granted')
-            return 0
+            full_message = Comm.strto0x(code[1:lenth-1])
+            FCS_calc = str(hex(Comm.pppfcs16(0xffff, full_message, len(full_message)))).zfill(4)[2:]
+            if len(FCS_calc) == 3:
+                FCS_calc = '0' + FCS_calc
+            FCS_calc = FCS_calc[2:] + FCS_calc[0:2]
+            if len(FCS_calc) == 2:
+                FCS_calc = FCS_calc + '00'
+            if FCS_calc[0] == "x":
+                FCS_calc = '0' + FCS_calc[1:]
+            print("FCS_calc: ", FCS_calc)
+            FCS_rec = code[lenth-1]+code[lenth]
+            print("FCS_rec: ", FCS_rec)
+            if FCS_calc==FCS_rec:
+                print('check granted')
+                return 0
+            else:
+                print("校验错误")
+                return 1
         else:
             print('lenth check denied')
             return 1
@@ -65,7 +81,8 @@ def Analysis(code):
         try:
             ctrlc_1(Comm.dec2bin(int(code[3], 16)))  # 控制码
         except:
-            return 1
+            print("控制码错误")
+
         code_remain = code[4:]
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
         global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white
@@ -189,9 +206,11 @@ def Analysis(code):
     else:
         print('非698,尝试645')
         text = Meter645_core.deal_receive(code)
-        if text is None or text[0] == 0:
+        if text is None:
             print('645解析失败')
             return 1
+        if text[0] == '2':
+            return 3
         global OI
         OI = text[1:]
         black_white_SA_address = Comm.list2str(Meter645_core.address[::-1])
@@ -268,6 +287,8 @@ def Information(num, detail, APDU):
                 frozenSign = 3
             if returnvalue == '5032':
                 frozenSign = 4
+            if returnvalue == '5005':
+                frozenSign = 5
             reCSD = RSD(APDU[5:])
             if reCSD is None:
                 return 0
@@ -385,7 +406,7 @@ def SequenceOfLen(remain):
 def A_ResultRecord_SEQUENCE(remain):
     OAD = str(remain[0] + remain[1])
     print("oad: "+OAD)
-    if OAD == '5004' or OAD == '5002' or OAD == '5006':
+    if OAD == '5004' or OAD == '5002' or OAD == '5006'or OAD == '5005':
         print('冻结')
         return OAD
     if OAD == '5032' :
@@ -973,12 +994,20 @@ class ReturnMessage():
             newOI = '50060200_' + OI
         if frozenSign == 4 and OI[0] != '5':
             newOI = '50320200_' + OI
+        if frozenSign == 5 and OI[0] != '5':
+            newOI = '50050200_' + OI
         # print('new OI',newOI)
         if auto_day_frozon_sign == 1 and newOI == '50040200_20210200' and sele != 9:
             print('自动日冻结时标')
             global Daily_freeze  # 冻结时间
             print('newOI', newOI)
             self.save(['50040200_20210200', '自动日冻结', ''])
+            SequenceOf_ARecordRow(Daily_freeze)
+
+        if auto_day_frozon_sign == 1 and newOI == '50050200_20210200' and sele != 9:
+            print('5005自动结算日冻结时标')
+            print('newOI', newOI)
+            self.save(['50050200_20210200', '自动结算日冻结', ''])
             SequenceOf_ARecordRow(Daily_freeze)
 
         if auto_day_frozon_sign == 1 and newOI == '50060200_20210200' and sele != 9:
@@ -1000,11 +1029,6 @@ class ReturnMessage():
             self.save(['50320200_20210200', '自动直流日冻结', ''])
             SequenceOf_ARecordRow(Daily_freeze)
 
-        if auto_curve_sign == 1 and newOI == '50320200_20210200' and sele != 9:
-            print('自动直流曲线时标')
-            print('curve_newOI', newOI)
-            self.save(['50320200_20210200', '自动直流曲线冻结', ''])
-            SequenceOf_ARecordRow(Daily_freeze)
 
         else:
             try:
@@ -1017,21 +1041,22 @@ class ReturnMessage():
                     pass
                 else:
                     print('未知数据标识 composefrozen  {}'.format(newOI))
-            if newOI == '50020200_202a0200' or newOI == '50040200_202a0200':
+            if newOI == '50020200_202a0200' or newOI == '50040200_202a0200'or newOI == '50050200_202a0200':
                 text = [newOI, '目标服务器地址', '5507' + Comm.list2str(SA_num_len)]
             self.save(text)
 
             if auto_increase_500400100200 == 1 and newOI == '50320200_00100200':  #new  直流
                 SequenceOf_ARecordRow(analysis_increase(text[2]))
 
-            if auto_increase_500400100200 == 1 and newOI == '50040200_00100200':
+            if auto_increase_500400100200 == 1 and (newOI == '50040200_00100200'or newOI == '50050200_00100200'):
                 SequenceOf_ARecordRow(analysis_increase(text[2]))
             elif auto_curve_sign == 1 and newOI == '50020200_20210200':
                 if sele == 9:
                     SequenceOf_ARecordRow(text[2])
             elif (auto_day_frozon_sign == 1 and newOI == '50040200_20210200') or (
                     auto_day_frozon_sign == 1 and newOI == '50060200_20210200') or (
-                    auto_day_frozon_sign == 1 and newOI == '50320200_20210200'):
+                    auto_day_frozon_sign == 1 and newOI == '50320200_20210200') or (
+                    auto_day_frozon_sign == 1 and newOI == '50050200_20210200'):
                 if sele == 9:
                     text__ = time.strftime('%Y%m%d%H%M%S')
                     year = hex(int(text__[0:4], 10))[2:].zfill(4)

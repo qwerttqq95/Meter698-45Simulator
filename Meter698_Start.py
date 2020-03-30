@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.56')
+        self.setWindowTitle('模拟表程序 v1.60')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -314,7 +314,7 @@ class Connect(threading.Thread):
             MainWindow._signal_text.emit('--------------------------------')
             MainWindow.log_session('--------------------------------')
         if sent == 3:
-            message = "开启白名单以启用搜698表"
+            message = "开启白名单以启用搜表"
             MainWindow._signal_text.emit(message)
             MainWindow.log_session(message)
             LargeOAD = ''
@@ -387,18 +387,20 @@ class Config(QDialog):
         self.ui.checkBox_6.clicked.connect(self.Curve_leak)
 
     def running(self):
+        if self.bw() == False:
+            QMessageBox.warning(self,"警告","黑白名单不能为空")
+            return
         self.get_auto_day_frozon()
         self.get_auto_curve_frozon()
         self.get_auto_increase()
         self.get_auto_increase_5004020000100200()
-        self.close()
         self.list_save()
-        self.bw()
         self.set_max()
         self.set_mac()
         self.sent_from_to()
         self.event_special()
         Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')
+        self.close()
 
     def event_special(self):
         Meter698_core.apdu_3320 = self.ui.lineEdit_3.text().replace(" ", '')
@@ -447,7 +449,16 @@ class Config(QDialog):
 
     def bw(self):
         re_ = self.black_and_white()
-        Meter698_core.B_W_add(re_[0], re_[1])
+        print("b&w", re_[1])
+        if re_[1]:
+            Meter698_core.B_W_add(re_[0], re_[1])
+            return True
+        else:
+            if re_[0] == 0:
+                Meter698_core.B_W_add(re_[0], re_[1])
+                return True
+            print("B&W list is None")
+            return False
 
     def black_and_white(self):
         if self.ui.radioButton_3.isChecked():  # 未启用

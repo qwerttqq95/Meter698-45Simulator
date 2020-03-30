@@ -310,7 +310,7 @@ class Ui_Dialog(object):
         self.radioButton_3.setText(_translate("Dialog", "未启用"))
         self.radioButton.setText(_translate("Dialog", "黑名单:"))
         self.radioButton_2.setText(_translate("Dialog", "白名单:"))
-        self.textEdit_2.setPlaceholderText(_translate("Dialog", "包含载波搜表回复地址,白名单关闭或搜表帧用全A回复地址为:000000000001"))
+        self.textEdit_2.setPlaceholderText(_translate("Dialog", "搜表回复第一个地址"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "功能"))
         self.tableWidget.setSortingEnabled(True)
         item = self.tableWidget.horizontalHeaderItem(0)
@@ -342,7 +342,7 @@ class Ui_Dialog(object):
         self.groupBox.setTitle(_translate("Dialog", "抄表log导出为:"))
         self.pushButton_5.setText(_translate("Dialog", "txt格式"))
         self.groupBox_3.setTitle(_translate("Dialog", "About："))
-        self.label_2.setText(_translate("Dialog", "Version：V1.5"))
+        self.label_2.setText(_translate("Dialog", "Version：V1.6"))
         self.label_3.setText(_translate("Dialog", "Frame：190909"))
         self.groupBox_5.setTitle(_translate("Dialog", "645说明:"))
         self.textEdit_3.setHtml(_translate("Dialog",
@@ -354,6 +354,6 @@ class Ui_Dialog(object):
                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回当前时间:@GetTime@</p>\n"
                                            "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回冻结时标(当前):@FreezeTime@</p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Dialog", "其它"))
-        self.pushButton.setText(_translate("Dialog", "Save"))
-        self.pushButton_2.setText(_translate("Dialog", "Cancel"))
+        self.pushButton.setText(_translate("Dialog", "保存"))
+        self.pushButton_2.setText(_translate("Dialog", "取消"))
 
