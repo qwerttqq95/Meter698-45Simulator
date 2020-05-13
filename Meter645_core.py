@@ -8,8 +8,8 @@ black = []
 white = []
 address = []
 stat = 0
-
-
+plus_one = 0
+plus_one_times=0
 def Electricity_meter_date_and_week_and_time(data):
     if data == '@GetDateWeek@':
         time1_str = datetime.datetime.now().strftime('%y%m%d%w')
@@ -21,8 +21,15 @@ def Electricity_meter_date_and_week_and_time(data):
         return time2_str
     elif data == '@FreezeTime@':
         # time3_str = datetime.datetime.now().strftime('%M%H%d%m%y').replace(':', '')
-        time3_str = datetime.datetime.now().strftime('%y%m%d0000')
+        global plus_one,plus_one_times
+        print("plus_one",plus_one)
+        if plus_one:
+            time3_str = (datetime.datetime.now()+datetime.timedelta(days=plus_one_times)).strftime('%y%m%d0000')
+            plus_one_times+=1
+        else:
+            time3_str = datetime.datetime.now().strftime('%y%m%d0000')
         return time3_str
+
     else:
         print('Electricity_meter_date_and_week_and_time not found!')
 

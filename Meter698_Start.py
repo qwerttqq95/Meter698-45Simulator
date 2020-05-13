@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.60')
+        self.setWindowTitle('模拟表程序 v1.62')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -240,28 +240,15 @@ class Connect(threading.Thread):
                     data = data + str(b2a_hex(self.serial.read(num)))[2:-1]
                     try:
                         if data != '':
-                            if data[0] == '6' and data[1] == '8' and len(data) > 20:
-                                if data[-1] == '6' and data[-2] == '1':
-                                    print('Received: ', data)
-                                    Received_data = '收到:\n' + makestr(data)
-                                    MainWindow._signal_text.emit(Received_data)
-                                    MainWindow.log_session(Received_data)
-                                    self.Meter = Meter698_core
-                                    wild = Meter698_core.Wild_match_Analysis(data.replace(' ', ''))
-                                    if wild == 0:
-                                        print('检测到通配地址')
-                                        times = Meter698_core.re_max()
-                                        sent = self.Meter.Analysis(data.replace(' ', ''))
-                                        self._Sent(sent)
-                                    elif wild == 1:  # add 645
-                                        sent = self.Meter.Analysis(data.replace(' ', ''))
-                                        self._Sent(sent)
-                                        continue
-                                    elif wild == 2:
-                                        data = ''
-                                        continue
-                                    else:
-                                        print('???')
+                            if data[0] == '6' and data[1] == '8' and  data[-1] == '6' and data[-2] == '1':
+                                print('Received: ', data)
+                                Received_data = '收到:\n' + makestr(data)
+                                MainWindow._signal_text.emit(Received_data)
+                                MainWindow.log_session(Received_data)
+                                self.Meter = Meter698_core
+                                sent = self.Meter.Analysis(data.replace(' ', ''))
+                                self._Sent(sent)
+                                continue
                             else:
                                 try:
                                     while 1:
@@ -399,8 +386,15 @@ class Config(QDialog):
         self.set_mac()
         self.sent_from_to()
         self.event_special()
+        self.plus()
         Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')
         self.close()
+
+    def plus(self):
+        if (self.ui.checkBox_7.isChecked()):
+            Meter698_core.plus_645=1
+        else:
+            Meter698_core.plus_645=0
 
     def event_special(self):
         Meter698_core.apdu_3320 = self.ui.lineEdit_3.text().replace(" ", '')
@@ -451,6 +445,7 @@ class Config(QDialog):
         re_ = self.black_and_white()
         print("b&w", re_[1])
         if re_[1]:
+
             Meter698_core.B_W_add(re_[0], re_[1])
             return True
         else:

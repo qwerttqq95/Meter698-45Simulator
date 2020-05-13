@@ -2,13 +2,13 @@ import Comm, time, traceback, configparser, random, Meter645_core, re
 
 
 def check(code):
-    if len(code) < 20 or len(code) > 200:
-        print('不符合698长度')
+    if len(code) < 20:
+        print('不符合698长度', code)
         return 1
     lenth = int(code[2] + code[1], 16)  # 长度
     if len(code) >= lenth + 2:
         if code[lenth + 1] == '16':
-            full_message = Comm.strto0x(code[1:lenth-1])
+            full_message = Comm.strto0x(code[1:lenth - 1])
             FCS_calc = str(hex(Comm.pppfcs16(0xffff, full_message, len(full_message)))).zfill(4)[2:]
             if len(FCS_calc) == 3:
                 FCS_calc = '0' + FCS_calc
@@ -18,9 +18,9 @@ def check(code):
             if FCS_calc[0] == "x":
                 FCS_calc = '0' + FCS_calc[1:]
             print("FCS_calc: ", FCS_calc)
-            FCS_rec = code[lenth-1]+code[lenth]
+            FCS_rec = code[lenth - 1] + code[lenth]
             print("FCS_rec: ", FCS_rec)
-            if FCS_calc==FCS_rec:
+            if FCS_calc == FCS_rec:
                 print('check granted')
                 return 0
             else:
@@ -205,6 +205,7 @@ def Analysis(code):
         return s
     else:
         print('非698,尝试645')
+        Meter645_core.plus_one = plus_645
         text = Meter645_core.deal_receive(code)
         if text is None:
             print('645解析失败')
@@ -403,13 +404,14 @@ def SequenceOfLen(remain):
         lenth -= 1
     return 1
 
+
 def A_ResultRecord_SEQUENCE(remain):
     OAD = str(remain[0] + remain[1])
-    print("oad: "+OAD)
-    if OAD == '5004' or OAD == '5002' or OAD == '5006'or OAD == '5005':
+    print("oad: " + OAD)
+    if OAD == '5004' or OAD == '5002' or OAD == '5006' or OAD == '5005':
         print('冻结')
         return OAD
-    if OAD == '5032' :
+    if OAD == '5032':
         print('直流冻结')
         return OAD
     if OAD[0] == '3':
@@ -842,7 +844,7 @@ class ReturnMessage():
         self.HCS = self.HCS[2:] + self.HCS[0:2]
         if len(self.HCS) == 2:
             self.HCS = self.HCS + '00'
-        print("HCS: ",self.HCS)
+        print("HCS: ", self.HCS)
         LargeOAD = APDU_len[2:] + APDU_len[0:2] + self.total + self.HCS + LargeOAD
         self.full_message = Comm.strto0x(Comm.makelist(LargeOAD))
         self.FCS = str(hex(Comm.pppfcs16(0xffff, self.full_message, len(self.full_message)))).zfill(4)[2:]
@@ -852,8 +854,8 @@ class ReturnMessage():
         if len(self.FCS) == 2:
             self.FCS = self.FCS + '00'
         if self.FCS[0] == "x":
-            self.FCS = '0'+self.FCS[1:]
-        print("FCS: ",self.FCS)
+            self.FCS = '0' + self.FCS[1:]
+        print("FCS: ", self.FCS)
         LargeOAD = '68' + LargeOAD + self.FCS + '16'
         print('发送报文:', LargeOAD, '\n')
 
@@ -906,17 +908,16 @@ class ReturnMessage():
                                 trans = str(int(y / 100) * 100 + add_aa_2).zfill(12)
                                 SA_num_len = '05' + Comm.list2str(Comm.makelist(trans)[::-1])
                                 print('compose_data_trans', trans)
-                                self.message = OI + '01' + '550705' + trans
+                                self.message = OI + '01' + '0906' + trans
                                 print('message', self.message)
                                 LargeOAD = LargeOAD + self.message
                                 return 0
-            # trans = str(int(text[2][6:-1]) + random.randint(0, _max)).zfill(12)
             if Comm.list2str(SA_num_len).find('a') == -1:
                 trans = Comm.list2str(SA_num_len[1:][::-1])
             else:
                 trans = str(int(text[2][6::])).zfill(12)
             print('compose_data_trans', trans)
-            self.message = OI + '01' + '550705' + trans
+            self.message = OI + '01' + '0906' + trans
             print('message', self.message)
             LargeOAD = LargeOAD + self.message
             return 0
@@ -1041,14 +1042,14 @@ class ReturnMessage():
                     pass
                 else:
                     print('未知数据标识 composefrozen  {}'.format(newOI))
-            if newOI == '50020200_202a0200' or newOI == '50040200_202a0200'or newOI == '50050200_202a0200':
+            if newOI == '50020200_202a0200' or newOI == '50040200_202a0200' or newOI == '50050200_202a0200':
                 text = [newOI, '目标服务器地址', '5507' + Comm.list2str(SA_num_len)]
             self.save(text)
 
-            if auto_increase_500400100200 == 1 and newOI == '50320200_00100200':  #new  直流
+            if auto_increase_500400100200 == 1 and newOI == '50320200_00100200':  # new  直流
                 SequenceOf_ARecordRow(analysis_increase(text[2]))
 
-            if auto_increase_500400100200 == 1 and (newOI == '50040200_00100200'or newOI == '50050200_00100200'):
+            if auto_increase_500400100200 == 1 and (newOI == '50040200_00100200' or newOI == '50050200_00100200'):
                 SequenceOf_ARecordRow(analysis_increase(text[2]))
             elif auto_curve_sign == 1 and newOI == '50020200_20210200':
                 if sele == 9:
@@ -1159,3 +1160,4 @@ minute_ = 0
 apdu_3320 = ''
 event_stat = 0
 event_blacklist = []
+plus_645 = 0

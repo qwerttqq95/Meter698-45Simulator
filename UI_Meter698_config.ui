@@ -25,8 +25,8 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-        <x>10</x>
-        <y>10</y>
+     <x>10</x>
+     <y>10</y>
      <width>621</width>
      <height>321</height>
     </rect>
@@ -41,7 +41,7 @@
     <enum>QTabWidget::Rounded</enum>
    </property>
    <property name="currentIndex">
-       <number>0</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <property name="contextMenuPolicy">
@@ -55,8 +55,8 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>170</width>
-       <height>138</height>
+       <width>175</width>
+       <height>160</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -104,9 +104,9 @@
       </item>
       <item>
        <widget class="QCheckBox" name="checkBox_4">
-           <property name="enabled">
-               <bool>true</bool>
-           </property>
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="font">
          <font>
           <family>Algerian</family>
@@ -133,7 +133,7 @@
          <string>日冻结数据变化</string>
         </property>
         <property name="checkable">
-            <bool>true</bool>
+         <bool>true</bool>
         </property>
         <property name="checked">
          <bool>false</bool>
@@ -185,6 +185,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="checkBox_7">
+        <property name="text">
+         <string>645时标随抄表次数叠加</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <property name="leftMargin">
          <number>5</number>
@@ -194,9 +201,9 @@
         </property>
         <item>
          <widget class="QLabel" name="label">
-             <property name="enabled">
-                 <bool>false</bool>
-             </property>
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>通配地址数量:</string>
           </property>
@@ -204,9 +211,9 @@
         </item>
         <item>
          <widget class="QLineEdit" name="lineEdit">
-             <property name="enabled">
-                 <bool>false</bool>
-             </property>
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string/>
           </property>
@@ -229,7 +236,7 @@
       </rect>
      </property>
      <property name="title">
-         <string>通信地址黑/白名单:(多地址用 / 隔开;地址范围用 - )</string>
+      <string>通信地址黑/白名单:(多地址用 / 隔开;地址范围用 - )</string>
      </property>
      <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
@@ -261,14 +268,14 @@
           </widget>
          </item>
          <item>
-             <widget class="QTextEdit" name="textEdit">
-                 <property name="enabled">
-                     <bool>false</bool>
-                 </property>
-                 <property name="acceptRichText">
-                     <bool>false</bool>
-                 </property>
-             </widget>
+          <widget class="QTextEdit" name="textEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="acceptRichText">
+            <bool>false</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -282,17 +289,17 @@
           </widget>
          </item>
          <item>
-             <widget class="QTextEdit" name="textEdit_2">
-                 <property name="enabled">
-                     <bool>false</bool>
-                 </property>
-                 <property name="acceptRichText">
-                     <bool>false</bool>
-                 </property>
-                 <property name="placeholderText">
-                     <string>包含载波搜表回复地址,白名单关闭或搜表帧用全A回复地址为:000000000001</string>
-                 </property>
-             </widget>
+          <widget class="QTextEdit" name="textEdit_2">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="acceptRichText">
+            <bool>false</bool>
+           </property>
+           <property name="placeholderText">
+            <string>包含载波搜表回复地址,白名单关闭或搜表帧用全A回复地址为:000000000001</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -302,7 +309,7 @@
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
-        <string>698数据标识</string>
+     <string>698数据标识</string>
     </attribute>
     <widget class="QTableWidget" name="tableWidget">
      <property name="geometry">
@@ -377,7 +384,7 @@
       <rect>
        <x>0</x>
        <y>270</y>
-          <width>121</width>
+       <width>239</width>
        <height>31</height>
       </rect>
      </property>
@@ -417,7 +424,7 @@
    </widget>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">
-        <string>*698高级</string>
+     <string>698高级</string>
     </attribute>
     <widget class="QGroupBox" name="groupBox_4">
      <property name="geometry">
@@ -429,7 +436,7 @@
       </rect>
      </property>
      <property name="title">
-         <string>曲线漏点</string>
+      <string>曲线漏点</string>
      </property>
      <widget class="QTimeEdit" name="timeEdit">
       <property name="enabled">
@@ -514,7 +521,7 @@
        </rect>
       </property>
       <property name="text">
-          <string>无数据时段:</string>
+       <string>无数据时段:</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_5">
@@ -547,130 +554,130 @@
       </property>
      </widget>
     </widget>
-       <widget class="QGroupBox" name="groupBox_6">
-           <property name="geometry">
-               <rect>
-                   <x>10</x>
-                   <y>110</y>
-                   <width>591</width>
-                   <height>171</height>
-               </rect>
-           </property>
-           <property name="title">
-               <string>特殊事件:</string>
-           </property>
-           <widget class="QGroupBox" name="groupBox_7">
-               <property name="geometry">
-                   <rect>
-                       <x>20</x>
-                       <y>20</y>
-                       <width>561</width>
-                       <height>81</height>
-                   </rect>
-               </property>
-               <property name="title">
-                   <string>事件返回</string>
-               </property>
-               <widget class="QLineEdit" name="lineEdit_22">
-                   <property name="enabled">
-                       <bool>false</bool>
-                   </property>
-                   <property name="geometry">
-                       <rect>
-                           <x>180</x>
-                           <y>24</y>
-                           <width>361</width>
-                           <height>20</height>
-                       </rect>
-                   </property>
-                   <property name="accessibleDescription">
-                       <string/>
-                   </property>
-                   <property name="inputMethodHints">
-                       <set>Qt::ImhNone</set>
-                   </property>
-                   <property name="inputMask">
-                       <string/>
-                   </property>
-                   <property name="placeholderText">
-                       <string>多个事件用英文分号隔开(;)</string>
-                   </property>
-               </widget>
-               <widget class="QWidget" name="layoutWidget">
-                   <property name="geometry">
-                       <rect>
-                           <x>11</x>
-                           <y>25</y>
-                           <width>171</width>
-                           <height>62</height>
-                       </rect>
-                   </property>
-                   <layout class="QFormLayout" name="formLayout">
-                       <item row="0" column="0">
-                           <widget class="QRadioButton" name="radioButton_4">
-                               <property name="text">
-                                   <string>按默认返回</string>
-                               </property>
-                               <property name="checked">
-                                   <bool>true</bool>
-                               </property>
-                           </widget>
-                       </item>
-                       <item row="2" column="0">
-                           <widget class="QRadioButton" name="radioButton_6">
-                               <property name="text">
-                                   <string>全回空</string>
-                               </property>
-                           </widget>
-                       </item>
-                       <item row="0" column="1">
-                           <widget class="QRadioButton" name="radioButton_5">
-                               <property name="text">
-                                   <string>部分回空:</string>
-                               </property>
-                           </widget>
-                       </item>
-                   </layout>
-               </widget>
-           </widget>
-           <widget class="QLabel" name="label_6">
-               <property name="geometry">
-                   <rect>
-                       <x>30</x>
-                       <y>130</y>
-                       <width>71</width>
-                       <height>16</height>
-                   </rect>
-               </property>
-               <property name="text">
-                   <string>3320返回值:</string>
-               </property>
-           </widget>
-           <widget class="QLineEdit" name="lineEdit_3">
-               <property name="geometry">
-                   <rect>
-                       <x>100</x>
-                       <y>128</y>
-                       <width>461</width>
-                       <height>20</height>
-                   </rect>
-               </property>
-               <property name="text">
-                   <string>85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>110</y>
+       <width>591</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>特殊事件:</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_7">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>561</width>
+        <height>81</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>事件返回</string>
+      </property>
+      <widget class="QLineEdit" name="lineEdit_22">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>180</x>
+         <y>24</y>
+         <width>361</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="accessibleDescription">
+        <string/>
+       </property>
+       <property name="inputMethodHints">
+        <set>Qt::ImhNone</set>
+       </property>
+       <property name="inputMask">
+        <string/>
+       </property>
+       <property name="placeholderText">
+        <string>多个事件用英文分号隔开(;)</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="layoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>11</x>
+         <y>25</y>
+         <width>171</width>
+         <height>62</height>
+        </rect>
+       </property>
+       <layout class="QFormLayout" name="formLayout">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="radioButton_4">
+          <property name="text">
+           <string>按默认返回</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QRadioButton" name="radioButton_6">
+          <property name="text">
+           <string>全回空</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QRadioButton" name="radioButton_5">
+          <property name="text">
+           <string>部分回空:</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>130</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>3320返回值:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="lineEdit_3">
+      <property name="geometry">
+       <rect>
+        <x>100</x>
+        <y>128</y>
+        <width>461</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00
                        00
                    </string>
-               </property>
-               <property name="frame">
-                   <bool>true</bool>
-               </property>
-               <property name="echoMode">
-                   <enum>QLineEdit::Normal</enum>
-               </property>
-               <property name="cursorPosition">
-                   <number>0</number>
-               </property>
-           </widget>
-       </widget>
+      </property>
+      <property name="frame">
+       <bool>true</bool>
+      </property>
+      <property name="echoMode">
+       <enum>QLineEdit::Normal</enum>
+      </property>
+      <property name="cursorPosition">
+       <number>0</number>
+      </property>
+     </widget>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_3">
     <attribute name="title">
@@ -724,7 +731,7 @@
        </rect>
       </property>
       <property name="text">
-          <string>Version：V1.4</string>
+       <string>Version：V1.6</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
@@ -737,62 +744,53 @@
        </rect>
       </property>
       <property name="text">
-          <string>Frame：190909</string>
+       <string>Frame：200427</string>
       </property>
      </widget>
     </widget>
-       <widget class="QGroupBox" name="groupBox_5">
-           <property name="geometry">
-               <rect>
-                   <x>210</x>
-                   <y>20</y>
-                   <width>371</width>
-                   <height>161</height>
-               </rect>
-           </property>
-           <property name="title">
-               <string>645说明:</string>
-           </property>
-           <widget class="QTextEdit" name="textEdit_3">
-               <property name="geometry">
-                   <rect>
-                       <x>20</x>
-                       <y>30</y>
-                       <width>331</width>
-                       <height>111</height>
-                   </rect>
-               </property>
-               <property name="autoFillBackground">
-                   <bool>true</bool>
-               </property>
-               <property name="readOnly">
-                   <bool>true</bool>
-               </property>
-               <property name="html">
-                   <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-                       &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style
-                       type=&quot;text/css&quot;&gt;
-                       p, li { white-space: pre-wrap; }
-                       &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt;
-                       font-weight:400; font-style:normal;&quot;&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt; &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt;返回年月日周:@GetDateWeek@ &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt;返回当前时间:@GetTime@ &lt;/p&gt;
-                       &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;
-                       -qt-block-indent:0; text-indent:0px;&quot;&gt;返回冻结时标(当前):@FreezeTime@ &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-                   </string>
-               </property>
-               <property name="acceptRichText">
-                   <bool>false</bool>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>20</y>
+       <width>371</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>645说明:</string>
+     </property>
+     <widget class="QTextEdit" name="textEdit_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>331</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <property name="autoFillBackground">
+       <bool>true</bool>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                       &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回年月日周:@GetDateWeek@                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回当前时间:@GetTime@                        &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回冻结时标(当前):@FreezeTime@                    &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="acceptRichText">
+       <bool>false</bool>
       </property>
      </widget>
     </widget>
@@ -843,53 +841,53 @@
     </hint>
    </hints>
   </connection>
-     <connection>
-         <sender>radioButton_5</sender>
-         <signal>toggled(bool)</signal>
-         <receiver>lineEdit_22</receiver>
-         <slot>setEnabled(bool)</slot>
-         <hints>
-             <hint type="sourcelabel">
-                 <x>161</x>
-                 <y>193</y>
-             </hint>
-             <hint type="destinationlabel">
-                 <x>307</x>
-                 <y>195</y>
-             </hint>
-         </hints>
-     </connection>
-     <connection>
-         <sender>radioButton</sender>
-         <signal>toggled(bool)</signal>
-         <receiver>textEdit</receiver>
-         <slot>setEnabled(bool)</slot>
-         <hints>
-             <hint type="sourcelabel">
-                 <x>241</x>
-                 <y>139</y>
-             </hint>
-             <hint type="destinationlabel">
-                 <x>334</x>
-                 <y>139</y>
-             </hint>
-         </hints>
-     </connection>
-     <connection>
-         <sender>radioButton_2</sender>
-         <signal>toggled(bool)</signal>
-         <receiver>textEdit_2</receiver>
-         <slot>setEnabled(bool)</slot>
-         <hints>
-             <hint type="sourcelabel">
-                 <x>243</x>
-                 <y>237</y>
-             </hint>
-             <hint type="destinationlabel">
-                 <x>332</x>
-                 <y>237</y>
-             </hint>
-         </hints>
-     </connection>
+  <connection>
+   <sender>radioButton_5</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit_22</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>161</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>195</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>textEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>241</x>
+     <y>139</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>334</x>
+     <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_2</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>textEdit_2</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>332</x>
+     <y>237</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

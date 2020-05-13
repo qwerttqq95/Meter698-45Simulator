@@ -2,11 +2,12 @@
 
 # Form implementation generated from reading ui file 'UI_Meter698_config.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.12.1
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -24,7 +25,7 @@ class Ui_Dialog(object):
         self.tab.setContextMenuPolicy(QtCore.Qt.NoContextMenu)
         self.tab.setObjectName("tab")
         self.layoutWidget = QtWidgets.QWidget(self.tab)
-        self.layoutWidget.setGeometry(QtCore.QRect(10, 30, 170, 138))
+        self.layoutWidget.setGeometry(QtCore.QRect(10, 30, 175, 160))
         self.layoutWidget.setObjectName("layoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -83,6 +84,9 @@ class Ui_Dialog(object):
         self.checkBox_5.setTristate(False)
         self.checkBox_5.setObjectName("checkBox_5")
         self.verticalLayout.addWidget(self.checkBox_5)
+        self.checkBox_7 = QtWidgets.QCheckBox(self.layoutWidget)
+        self.checkBox_7.setObjectName("checkBox_7")
+        self.verticalLayout.addWidget(self.checkBox_7)
         self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_5.setContentsMargins(5, -1, 14, -1)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
@@ -159,7 +163,7 @@ class Ui_Dialog(object):
         self.tableWidget.horizontalHeader().setMinimumSectionSize(110)
         self.tableWidget.verticalHeader().setVisible(False)
         self.layoutWidget2 = QtWidgets.QWidget(self.tab_2)
-        self.layoutWidget2.setGeometry(QtCore.QRect(0, 270, 121, 31))
+        self.layoutWidget2.setGeometry(QtCore.QRect(0, 270, 239, 31))
         self.layoutWidget2.setObjectName("layoutWidget2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.layoutWidget2)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -305,12 +309,13 @@ class Ui_Dialog(object):
         self.checkBox.setText(_translate("Dialog", "日月冻结时标自动修正"))
         self.checkBox_4.setText(_translate("Dialog", "日冻结数据变化"))
         self.checkBox_5.setText(_translate("Dialog", "明文安全响应（回复MAC）"))
+        self.checkBox_7.setText(_translate("Dialog", "645时标随抄表次数叠加"))
         self.label.setText(_translate("Dialog", "通配地址数量:"))
         self.groupBox_2.setTitle(_translate("Dialog", "通信地址黑/白名单:(多地址用 / 隔开;地址范围用 - )"))
         self.radioButton_3.setText(_translate("Dialog", "未启用"))
         self.radioButton.setText(_translate("Dialog", "黑名单:"))
         self.radioButton_2.setText(_translate("Dialog", "白名单:"))
-        self.textEdit_2.setPlaceholderText(_translate("Dialog", "搜表回复第一个地址"))
+        self.textEdit_2.setPlaceholderText(_translate("Dialog", "包含载波搜表回复地址,白名单关闭或搜表帧用全A回复地址为:000000000001"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Dialog", "功能"))
         self.tableWidget.setSortingEnabled(True)
         item = self.tableWidget.horizontalHeaderItem(0)
@@ -336,24 +341,30 @@ class Ui_Dialog(object):
         self.radioButton_6.setText(_translate("Dialog", "全回空"))
         self.radioButton_5.setText(_translate("Dialog", "部分回空:"))
         self.label_6.setText(_translate("Dialog", "3320返回值:"))
-        self.lineEdit_3.setText(_translate("Dialog",
-                                           "85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00 00"))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Dialog", "*698高级"))
+        self.lineEdit_3.setText(_translate("Dialog", "85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00\n"
+"                       00\n"
+"                   "))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Dialog", "698高级"))
         self.groupBox.setTitle(_translate("Dialog", "抄表log导出为:"))
         self.pushButton_5.setText(_translate("Dialog", "txt格式"))
         self.groupBox_3.setTitle(_translate("Dialog", "About："))
         self.label_2.setText(_translate("Dialog", "Version：V1.6"))
-        self.label_3.setText(_translate("Dialog", "Frame：190909"))
+        self.label_3.setText(_translate("Dialog", "Frame：200427"))
         self.groupBox_5.setTitle(_translate("Dialog", "645说明:"))
-        self.textEdit_3.setHtml(_translate("Dialog",
-                                           "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-                                           "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-                                           "p, li { white-space: pre-wrap; }\n"
-                                           "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回年月日周:@GetDateWeek@</p>\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回当前时间:@GetTime@</p>\n"
-                                           "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回冻结时标(当前):@FreezeTime@</p></body></html>"))
+        self.textEdit_3.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                       </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回年月日周:@GetDateWeek@                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回当前时间:@GetTime@                        </p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回冻结时标(当前):@FreezeTime@                    </p></body></html>"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Dialog", "其它"))
-        self.pushButton.setText(_translate("Dialog", "保存"))
-        self.pushButton_2.setText(_translate("Dialog", "取消"))
+        self.pushButton.setText(_translate("Dialog", "Save"))
+        self.pushButton_2.setText(_translate("Dialog", "Cancel"))
+
 
