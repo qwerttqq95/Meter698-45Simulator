@@ -190,11 +190,14 @@ def Analysis(code):
                 else:
                     print("blocked")
                     return 1
-
+            else:
+                global trans
+                trans = white[0]
         CA = code_remain[1 + SA_len_num:][0]
         HCS = code_remain[1 + SA_len_num:][1] + code_remain[1 + SA_len_num:][2]
         APDU = code_remain[1 + SA_len_num:][3:-3]
         if Information(APDU[0], APDU[1], APDU[2:]) is None:
+            print("198")
             return 1
         s = LargeOAD
         LargeOAD = ''

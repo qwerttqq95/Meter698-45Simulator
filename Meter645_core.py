@@ -197,7 +197,7 @@ def deal_receive(message):
                 return (text,"645广播")
             for x in address:
                 if x.find('a') > -1:
-                    print('find a re None')
+                    print('645搜表不支持')
                     return None
             # insert
             print("stat ",stat)

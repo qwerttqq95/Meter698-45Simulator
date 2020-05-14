@@ -44,6 +44,11 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
+        self.ui.textEdit.append("v1.62说明:\n"
+                                "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
+                                "2.数据可在'config.ini'中修改.\n"
+                                "3.修改了表号与地址返回错误的问题.\n"
+                                "4.解决了串口关闭后仍被占用的问题.")
 
     def log_session(self, message):
         if self.ui.checkBox.isChecked():
@@ -185,6 +190,7 @@ class Connect(threading.Thread):
             MainWindow.Show_Hidden('0')
             self.__runflag.clear()
             MainWindow.ui.label_5.hide()
+            self.serial.close()
 
         else:
             MainWindow.ui.pushButton.setText('关闭')
@@ -234,7 +240,7 @@ class Connect(threading.Thread):
                 data = ''
                 while self.__runflag.isSet():
                     time.sleep(0.2)
-                    if self.serial.isOpen is False:
+                    if MainWindow.ui.pushButton.text() == '启动':
                         break
                     num = self.serial.inWaiting()
                     data = data + str(b2a_hex(self.serial.read(num)))[2:-1]

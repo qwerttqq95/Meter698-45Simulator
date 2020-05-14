@@ -341,9 +341,7 @@ class Ui_Dialog(object):
         self.radioButton_6.setText(_translate("Dialog", "全回空"))
         self.radioButton_5.setText(_translate("Dialog", "部分回空:"))
         self.label_6.setText(_translate("Dialog", "3320返回值:"))
-        self.lineEdit_3.setText(_translate("Dialog", "85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00\n"
-"                       00\n"
-"                   "))
+        self.lineEdit_3.setText(_translate("Dialog", "85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00 00\n"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("Dialog", "698高级"))
         self.groupBox.setTitle(_translate("Dialog", "抄表log导出为:"))
         self.pushButton_5.setText(_translate("Dialog", "txt格式"))
@@ -355,11 +353,6 @@ class Ui_Dialog(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'SimSun\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                       </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">                        </p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回年月日周:@GetDateWeek@                        </p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回当前时间:@GetTime@                        </p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">返回冻结时标(当前):@FreezeTime@                    </p></body></html>"))
