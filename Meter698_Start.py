@@ -44,11 +44,10 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        self.ui.textEdit.append("v1.62说明:\n"
+        self.ui.textEdit.append("v1.63说明:\n"
                                 "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
                                 "2.模拟表数据可在'config.ini'中修改,格式为'utf-8'.\n"
-                                "3.修改了表号与地址返回错误的问题.\n"
-                                "4.解决了串口关闭后仍被占用的问题.\n")
+                                "3.新增06000001特殊处理.\n")
 
     def log_session(self, message):
         if self.ui.checkBox.isChecked():

@@ -9,7 +9,9 @@ white = []
 address = []
 stat = 0
 plus_one = 0
-plus_one_times=0
+plus_one_times = 0
+
+
 def Electricity_meter_date_and_week_and_time(data):
     if data == '@GetDateWeek@':
         time1_str = datetime.datetime.now().strftime('%y%m%d%w')
@@ -21,11 +23,11 @@ def Electricity_meter_date_and_week_and_time(data):
         return time2_str
     elif data == '@FreezeTime@':
         # time3_str = datetime.datetime.now().strftime('%M%H%d%m%y').replace(':', '')
-        global plus_one,plus_one_times
-        print("plus_one",plus_one)
+        global plus_one, plus_one_times
+        print("plus_one", plus_one)
         if plus_one:
-            time3_str = (datetime.datetime.now()+datetime.timedelta(days=plus_one_times)).strftime('%y%m%d0000')
-            plus_one_times+=1
+            time3_str = (datetime.datetime.now() + datetime.timedelta(days=plus_one_times)).strftime('%y%m%d0000')
+            plus_one_times += 1
         else:
             time3_str = datetime.datetime.now().strftime('%y%m%d0000')
         return time3_str
@@ -63,7 +65,7 @@ def strto0x(context):  # list
     return new_context
 
 
-def CS(list, b):
+def CS(list, b=None):
     sum = 0
     while list:
         sum = sum + ord(list.pop())
@@ -80,6 +82,13 @@ def CS(list, b):
             print('校验错误')
     return sum
 
+def new_cs(list):
+    sum = 0
+    while list:
+        sum = sum + int(list.pop(),16)
+    sum = hex(sum & 0xff)[2:].zfill(2)
+    print('校验 ',sum)
+    return sum
 
 def readdata(OI):
     conf_new = configparser.ConfigParser()
@@ -90,6 +99,8 @@ def readdata(OI):
         text = [OI, get[0], get[1]]
         print("事件", text)
         # data = (text[-1]).replace(',', '')
+        if OI == "06000001":
+            return OI_06000001(get[1])
         data = text[-1]
         name = text[-2]
         if data[0] == '@':
@@ -108,6 +119,24 @@ def readdata(OI):
         #     traceback.print_exc(file=open('bug.txt', 'a+'))
     return None
 
+
+def OI_06000001(get):
+    global other_data
+    d_times = Comm.list2str(minus33(other_data[1:])[::-1])
+    spl = get.split(',')
+    V_A_F = spl[0]
+    gonglv = spl[1]
+    yinshu = spl[2]
+    youwugpngdianneng = spl[3]
+    fourxiangxinwugong = spl[4]
+    dangqianxuliang = spl[5]
+    compose = "A0A0"
+    length = 11 + V_A_F.__len__() // 2 + gonglv.__len__() // 2 + yinshu.__len__() // 2 + youwugpngdianneng.__len__() // 2 + fourxiangxinwugong.__len__() // 2 + dangqianxuliang.__len__() // 2
+    compose = compose + (hex(length)[-2:].zfill(
+        2)) + d_times + V_A_F + 'AA' + gonglv + 'AA' + yinshu + 'AA' + youwugpngdianneng + 'AA' + fourxiangxinwugong + 'AA' + dangqianxuliang + 'AA'
+    cs = new_cs(Comm.makelist(compose))
+    compose += cs + 'E5'
+    return compose, '负荷记录块'
 
 def plus33(message):
     newstr = ''
@@ -134,7 +163,7 @@ def plus33(message):
             new_list = []
             while lenth:
                 lenth -= 1
-                new_list.append(hex(int(message.pop(), 16) + 51)[2:])
+                new_list.append(hex(int(message.pop(), 16) + 51)[-2:])
             newstr = Comm.list2str(new_list)
         return newstr
 
@@ -161,7 +190,7 @@ def returnframe(add, reconctrlcode, L, D, N):
 def B_W_add(stat_, add):
     global black_white_SA_address, black, white, stat
     stat = stat_
-    print('changed stat',stat)
+    print('changed stat', stat)
     if stat == 0:
         black = []
         white = []
@@ -181,7 +210,7 @@ def deal_receive(message):
     #     return (text, '0', '0')
     while 1:
         if message[0] == '68':
-            global address,white,stat
+            global address, white, stat
             address = message[1:7]
             if address == ['aa', 'aa', 'aa', 'aa', 'aa', 'aa'] or address == ['99', '99', '99', '99', '99', '99']:
                 if stat != 2:
@@ -193,14 +222,14 @@ def deal_receive(message):
                 text = '68' + Comm.list2str(add) + '68' + reconctrlcode + L + D
                 cs = CS(strto0x(Comm.makelist(text)), None)
                 text = text + cs + '16'
-                print("返回发送",text)
-                return (text,"645广播")
+                print("返回发送", text)
+                return (text, "645广播")
             for x in address:
                 if x.find('a') > -1:
                     print('645搜表不支持')
                     return None
             # insert
-            print("stat ",stat)
+            print("stat ", stat)
             if stat == 1:
                 for add in black:
                     print('add: ', add)
@@ -250,8 +279,11 @@ def deal_receive(message):
         D = ''
         text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
         print('Sending:', text)
-        return (text,'SET', 'TRUE')
+        return (text, 'SET', 'TRUE')
+    data_len_ = int(message[9], 16)
     datasign = message[10:14]
+    global other_data
+    other_data = message[14:data_len_ - 4 +14]
     D = Comm.list2str(datasign)
     cs = CS(strto0x(message[0:-2]), message[-2])
     OI = Comm.list2str(minus33(datasign)).upper()
@@ -270,8 +302,9 @@ def deal_receive(message):
     else:
         # if re.match("0201FF00", OI):
         #     returnstr = "3232" + "3232" * 2;
-
-        if re.match("0610", OI):
+        if re.match("06000001",OI):
+            returnstr =Comm.list2str(Comm.makelist(plus33(a[0]))[::-1])
+        elif re.match("0610", OI):
             TIME = Comm.list2str(message[15:20])
             print("time:", TIME, message[14])
             times = int(hex(int(message[14], 16) - 51)[2:].zfill(2))
@@ -280,7 +313,7 @@ def deal_receive(message):
         else:
             returnstr = plus33(a[0])  # Date!!!!
         L = hex(4 + len(Comm.makelist(returnstr)))[2:].zfill(2)
-        print("长度:",hex(4 + len(Comm.makelist(returnstr)))[2:])
+        print("长度:", hex(4 + len(Comm.makelist(returnstr)))[2:])
         text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
         print('Sending:', text)
     return (text, OI + " " + a[1], a[0])
