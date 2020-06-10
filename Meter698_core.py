@@ -146,6 +146,7 @@ def Analysis(code):
                     return 1
         else:
             print(" find a")
+            global match_add
             if black_white_SA_address != 'aaaaaaaaaaaa':
                 if b_w_stat == 2:
                     whitelist = []
@@ -173,6 +174,8 @@ def Analysis(code):
                                 if black_white_SA_address_makelist_int == x_makelist:
                                     print('match')
                                     match = 1
+
+                                    match_add = x
                                     break
                             if match == 0:
                                 return 1
@@ -183,6 +186,7 @@ def Analysis(code):
                                 if black_white_SA_address_makelist_int == x_makelist:
                                     print('match')
                                     match = 1
+                                    match_add = x
                                     break
                             if match == 0:
                                 return 1
@@ -896,25 +900,27 @@ class ReturnMessage():
             self.save(st)
             print('b_w_stat: ', b_w_stat, 'black_white_SA_address', black_white_SA_address, 'white', white)
             if b_w_stat == 2 and black_white_SA_address.find('a') != -1 and black_white_SA_address != 'aaaaaaaaaaaa':
-                add_aa_2 = int(black_white_SA_address[-2:])
-                for add in white:
-                    if add.find('-') > 0:
-                        add_range = add.split('-')
-                        start = int(add_range[0])
-                        end = int(add_range[1])
-                        add_list = []
-                        while start <= end:
-                            add_list.append(start)
-                            start += 1
-                        for y in add_list:
-                            if y % 100 == add_aa_2:
-                                trans = str(int(y / 100) * 100 + add_aa_2).zfill(12)
-                                SA_num_len = '05' + Comm.list2str(Comm.makelist(trans)[::-1])
-                                print('compose_data_trans', trans)
-                                self.message = OI + '01' + '0906' + trans
-                                print('message', self.message)
-                                LargeOAD = LargeOAD + self.message
-                                return 0
+                # add_aa_2 = int(black_white_SA_address[-2:])
+                # for add in white:
+                #     if add.find('-') > 0:
+                #         add_range = add.split('-')
+                #         start = int(add_range[0])
+                #         end = int(add_range[1])
+                #         add_list = []
+                #         while start <= end:
+                #             add_list.append(start)
+                #             start += 1
+                #         for y in add_list:
+                #             if y % 100 == add_aa_2:
+                #                 trans = str(int(y / 100) * 100 + add_aa_2).zfill(12)
+
+                #                 print('compose_data_trans', trans)
+                global match_add
+                self.message = OI + '01' + '0906' + match_add
+                SA_num_len = '05' + Comm.list2str(Comm.makelist(match_add)[::-1])
+                print('message', self.message)
+                LargeOAD = LargeOAD + self.message
+                return 0
             if Comm.list2str(SA_num_len).find('a') == -1:
                 trans = Comm.list2str(SA_num_len[1:][::-1])
             else:

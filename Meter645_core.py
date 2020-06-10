@@ -82,12 +82,17 @@ def CS(list, b=None):
             print('校验错误')
     return sum
 
-def new_cs(list):
+def CS_new(list,b=None):
     sum = 0
     while list:
         sum = sum + int(list.pop(),16)
     sum = hex(sum & 0xff)[2:].zfill(2)
     print('校验 ',sum)
+    if b is None:
+        pass
+    else:
+        if sum != b.lower():
+            print('校验错误')
     return sum
 
 def readdata(OI):
@@ -134,7 +139,7 @@ def OI_06000001(get):
     length = 11 + V_A_F.__len__() // 2 + gonglv.__len__() // 2 + yinshu.__len__() // 2 + youwugpngdianneng.__len__() // 2 + fourxiangxinwugong.__len__() // 2 + dangqianxuliang.__len__() // 2
     compose = compose + (hex(length)[-2:].zfill(
         2)) + d_times + V_A_F + 'AA' + gonglv + 'AA' + yinshu + 'AA' + youwugpngdianneng + 'AA' + fourxiangxinwugong + 'AA' + dangqianxuliang + 'AA'
-    cs = new_cs(Comm.makelist(compose))
+    cs = CS_new(Comm.makelist(compose))
     compose += cs + 'E5'
     return compose, '负荷记录块'
 

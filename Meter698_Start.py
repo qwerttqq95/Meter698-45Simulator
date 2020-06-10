@@ -1,6 +1,6 @@
 import UI_Meter698, sys, serial, serial.tools.list_ports, threading, Meter698_core, time, UI_Meter698_config, \
     configparser, os, datetime, re
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidgetItem, QHeaderView, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidgetItem, QHeaderView, QFileDialog,QPushButton
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QIcon
 from Comm import makestr, get_list_sum, makelist
@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.62')
+        self.setWindowTitle('模拟表程序 v1.64')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -47,7 +47,8 @@ class MainWindow(QMainWindow):
         self.ui.textEdit.append("v1.63说明:\n"
                                 "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
                                 "2.模拟表数据可在'config.ini'中修改,格式为'utf-8'.\n"
-                                "3.新增06000001特殊处理.\n")
+                                "3.新增06000001特殊处理.\n"
+                                "4.修改698规约搜表策略.\n")
 
     def log_session(self, message):
         if self.ui.checkBox.isChecked():
@@ -164,12 +165,12 @@ class RuningTime(threading.Thread):
             a = int(self.sec)
             if 3600 > a > 60:
                 b = a // 60
-                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 分钟 ' + str(a % 60) + ' 秒')
+                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 分钟 ' + str(a % 60) + ' 秒'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
             elif a >= 3600:
                 b = a // 3600
-                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 时 ' + str(a % 3600 // 60) + ' 分钟')
+                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 时 ' + str(a % 3600 // 60) + ' 分钟'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
             else:
-                MainWindow.ui.label_5.setText('运行时间: ' + str(a) + ' 秒')
+                MainWindow.ui.label_5.setText('运行时间: ' + str(a) + ' 秒'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
 
     def res(self):
         self.sec = 0
