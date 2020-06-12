@@ -141,7 +141,7 @@ def OI_06000001(get):
         2)) + d_times + V_A_F + 'AA' + gonglv + 'AA' + yinshu + 'AA' + youwugpngdianneng + 'AA' + fourxiangxinwugong + 'AA' + dangqianxuliang + 'AA'
     cs = CS_new(Comm.makelist(compose))
     compose += cs + 'E5'
-    return compose, '负荷记录块'
+    return compose, '负荷记录块 '+Comm.list2str(minus33(other_data[1:]))
 
 def plus33(message):
     newstr = ''

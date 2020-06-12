@@ -1,6 +1,7 @@
 import UI_Meter698, sys, serial, serial.tools.list_ports, threading, Meter698_core, time, UI_Meter698_config, \
-    configparser, os, datetime, re
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidgetItem, QHeaderView, QFileDialog,QPushButton
+    configparser, os, datetime, re, requests, Protocol
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTableWidgetItem, QHeaderView, QFileDialog, \
+    QPushButton
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QIcon
 from Comm import makestr, get_list_sum, makelist
@@ -16,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.64')
+        self.setWindowTitle('模拟表程序 v1.70')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -44,11 +45,51 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        self.ui.textEdit.append("v1.63说明:\n"
+        self.ui.textEdit.append("v1.7说明:\n"
                                 "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
                                 "2.模拟表数据可在'config.ini'中修改,格式为'utf-8'.\n"
                                 "3.新增06000001特殊处理.\n"
-                                "4.修改698规约搜表策略.\n")
+                                "4.修改698规约搜表策略.\n"
+                                "5.添加高级功能.\n"
+                                "6.修改黑名单bug.\n")
+        self.find_new_vesion_thread()
+
+        self.ui.pushButton_3.clicked.connect(self.advance_change_text)
+        self.ui.plainTextEdit.setReadOnly(1)
+        self.ui.groupBox.setHidden(1)
+
+    def advance_change_text(self):
+        if self.ui.pushButton_3.text() == "上线":
+            self.pro = Protocol.Pro376(self.ui.lineEdit_2.text())
+            self.pro._signal_advance_text.connect(self.advance_show_message)
+            self.ui.pushButton_3.setText("取消上线")
+        else:
+            self.pro.flag = 1
+            time.sleep(2)
+            del self.pro
+            self.ui.pushButton_3.setText("上线")
+
+
+    def advance_show_message(self, text):
+        self.ui.plainTextEdit.appendPlainText(text)
+
+    def find_new_vesion_thread(self):
+        self.he = threading.Thread(target=self.find_new_vesion)
+        self.he.setDaemon(True)
+        self.he.start()
+
+    def find_new_vesion(self):
+        try:
+            res = requests.get("https://github.com/qwerttqq95/Meter698-45Simulator/blob/master/Meter698_Start.py")
+            ver = (re.search("模拟表程序 v(.{4})", res.text)).group()
+            # print(ver, self.windowTitle())
+            if ver != self.windowTitle():
+                self.setWindowTitle(self.windowTitle() + " 发现新版可用(" + ver.split(" ")[1] + ")")
+            else:
+                print("无新版可用")
+        except:
+            print("检测失败")
+            print_exc()
 
     def log_session(self, message):
         if self.ui.checkBox.isChecked():
@@ -165,12 +206,14 @@ class RuningTime(threading.Thread):
             a = int(self.sec)
             if 3600 > a > 60:
                 b = a // 60
-                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 分钟 ' + str(a % 60) + ' 秒'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
+                MainWindow.ui.label_5.setText(
+                    '运行时间: ' + str(b) + ' 分钟 ' + str(a % 60) + ' 秒' + "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
             elif a >= 3600:
                 b = a // 3600
-                MainWindow.ui.label_5.setText('运行时间: ' + str(b) + ' 时 ' + str(a % 3600 // 60) + ' 分钟'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
+                MainWindow.ui.label_5.setText(
+                    '运行时间: ' + str(b) + ' 时 ' + str(a % 3600 // 60) + ' 分钟' + "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
             else:
-                MainWindow.ui.label_5.setText('运行时间: ' + str(a) + ' 秒'+ "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
+                MainWindow.ui.label_5.setText('运行时间: ' + str(a) + ' 秒' + "         *提示:左键3击报文自动全选;右侧滑块非置底页面不刷新")
 
     def res(self):
         self.sec = 0
@@ -246,7 +289,7 @@ class Connect(threading.Thread):
                     data = data + str(b2a_hex(self.serial.read(num)))[2:-1]
                     try:
                         if data != '':
-                            if data[0] == '6' and data[1] == '8' and  data[-1] == '6' and data[-2] == '1':
+                            if data[0] == '6' and data[1] == '8' and data[-1] == '6' and data[-2] == '1':
                                 print('Received: ', data)
                                 Received_data = '收到:\n' + makestr(data)
                                 MainWindow._signal_text.emit(Received_data)
@@ -381,7 +424,7 @@ class Config(QDialog):
 
     def running(self):
         if self.bw() == False:
-            QMessageBox.warning(self,"警告","黑白名单不能为空")
+            QMessageBox.warning(self, "警告", "黑白名单不能为空")
             return
         self.get_auto_day_frozon()
         self.get_auto_curve_frozon()
@@ -398,9 +441,9 @@ class Config(QDialog):
 
     def plus(self):
         if (self.ui.checkBox_7.isChecked()):
-            Meter698_core.plus_645=1
+            Meter698_core.plus_645 = 1
         else:
-            Meter698_core.plus_645=0
+            Meter698_core.plus_645 = 0
 
     def event_special(self):
         Meter698_core.apdu_3320 = self.ui.lineEdit_3.text().replace(" ", '')

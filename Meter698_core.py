@@ -85,11 +85,14 @@ def Analysis(code):
 
         code_remain = code[4:]
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
-        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white
+        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list,Curve_gaps_times_multi,OI_list_re
+        Curve_gaps_times_multi = 0
+        OI_list_re = [" "]
         relen = 0
         LargeOAD = ''
         data = ''
         data_list = []
+        curve_list = []
         frozenSign = 0
         SA_num_len = code_remain[0:1 + SA_len_num]
         print('SA_num_len:', SA_num_len)
@@ -135,6 +138,7 @@ def Analysis(code):
                             num = 1
                     elif add == black_white_SA_address:
                         print('发现白名单')
+                        num = -1
                         break
                     else:
                         num = 1
@@ -322,7 +326,10 @@ def Information(num, detail, APDU):
                     LargeOAD = datatype + LargeOAD + Comm.list_append(data_list) + '0000'
 
             else:
-                LargeOAD = str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '0101'
+                global Curve_gaps_times, count_re, OI_list_re
+                relen = OI_list_re.__len__() - 1
+                LargeOAD = str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '01' + str(count_re).zfill(
+                    2)
                 # print('data_list', data_list)
                 LargeOAD = datatype + LargeOAD + Comm.list_append(data_list) + '0000'
 
@@ -501,13 +508,13 @@ def A_ResultRecord_SEQUENCE_RSD(remain):
         OI = remain[0] + remain[1]
         unsigned11 = Comm.dec2bin(int(remain[2])).zfill(8)  # 特征值
         unsigned11 = int(unsigned11[0:4], 10)
-        print(OI + remain[2] + remain[3], end=' ')
+        print(OI + remain[2] + remain[3], end='\n')
     except:
         traceback.print_exc(file=open('bug.txt', 'a+'))
 
 
 def RSD(remain):
-    global relen, sele
+    global relen, sele, count_re, curve_list
     if remain[0] == '01':
         sele = 1
         print('Selector 01')
@@ -519,10 +526,12 @@ def RSD(remain):
         sele = 2
         print('Selector 02')
         A_ResultRecord_SEQUENCE_RSD(remain[1:5])
-        reMessage = Data(remain[5], remain[6:])
-        reMessage = Data(reMessage[8], reMessage[9:])  # 收到的冻结时间
+        reMessage1 = Data(remain[5], remain[6:])
+        Data(reMessage1[0], reMessage1[1:])
+        reMessage2 = Data(reMessage1[8], reMessage1[9:])  # 收到的冻结时间
+        count_re = Comm.time_cacl(curve_list[1], curve_list[0], Curve_gaps_times)
         relen = 0
-        return reMessage
+        return reMessage2
     if remain[0] == '09':
         sele = 9
         print('Selector 09')
@@ -534,12 +543,18 @@ def RSD(remain):
 def RCSD(remain_len, args):
     lens = int(remain_len, 16)
     print('lens', lens)
-    while lens > 0:
-        args = CSD_CHOICE(args)
-        if args is None:
-            print("arg is None")
-            return None
-        lens -= 1
+    backup_args = args
+    backup_len = lens
+    global count_re
+    for x in range(count_re):
+        args = backup_args
+        lens = backup_len
+        while lens > 0:
+            args = CSD_CHOICE(args)
+            if args is None:
+                print("arg is None")
+                return None
+            lens -= 1
     return args
 
 
@@ -705,9 +720,10 @@ def Data(DataDescribe, args):
                 minute).zfill(2) + ':' + str(
                 second).zfill(2)
             print(datatime)
-            global Daily_freeze
+            global Daily_freeze, curve_list
             Daily_freeze = '1c' + Comm.list2str(args[0:7])  # 冻结返回时间
-            print('Daily_freeze', Daily_freeze)
+            curve_list.append(Daily_freeze)
+            print('Daily_freeze', Daily_freeze,curve_list)
             global Difference
             Difference = abs(int(time.strftime('%m%d'), 10) - (mouth * 100 + day))
 
@@ -723,6 +739,8 @@ def Data(DataDescribe, args):
             timeUnit = int(args[0], 16)
             times = int(args[1] + args[2], 16)
             if timeUnit == 1:
+                global Curve_gaps_times
+                Curve_gaps_times = 60 * times
                 print(times, '分钟')
             return args[3:]
         elif DataDescribe == '85':
@@ -1027,10 +1045,16 @@ class ReturnMessage():
             SequenceOf_ARecordRow(Daily_freeze)
 
         if auto_curve_sign == 1 and newOI == '50020200_20210200' and sele != 9:
+            # todo
+            global curve_list, Curve_gaps_times, Curve_gaps_times_multi
             print('自动曲线时标')
             print('curve_newOI', newOI)
             self.save(['50020200_20210200', '自动曲线冻结', ''])
-            SequenceOf_ARecordRow(Daily_freeze)
+            print("curve_list",curve_list)
+            x = Comm.time_add(curve_list[0], Curve_gaps_times_multi * Curve_gaps_times)
+            print("x: ",x)
+            SequenceOf_ARecordRow(x)
+            Curve_gaps_times_multi +=1
 
         if auto_day_frozon_sign == 1 and newOI == '50320200_20210200' and sele != 9:
             print('自动直流日冻结时标')
@@ -1076,8 +1100,17 @@ class ReturnMessage():
                     SequenceOf_ARecordRow(times)
             else:
                 SequenceOf_ARecordRow(text[2])
-        global LargeOAD
-        LargeOAD = LargeOAD + '00' + OI
+        global LargeOAD, OI_list_re
+        OI_list_re_flag = 0
+        print(OI_list_re)
+        for x in OI_list_re:
+            if OI == x:
+                OI_list_re_flag = 1
+                break
+
+        if OI_list_re_flag == 0:
+            OI_list_re.append(OI)
+            LargeOAD = LargeOAD + '00' + OI
         sele = 0
 
 
@@ -1170,3 +1203,6 @@ apdu_3320 = ''
 event_stat = 0
 event_blacklist = []
 plus_645 = 0
+curve_list = []
+OI_list_re = [" "]
+Curve_gaps_times_multi = 0

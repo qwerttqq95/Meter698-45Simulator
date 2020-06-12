@@ -1,6 +1,33 @@
 import re, time
 
 
+def time_add(ori, add):
+    if add == 0:
+        return ori
+    hex_text_list1 = makestr(ori).split(" ")
+    save1 = hex_text_list1[0:5]
+    times = (int(hex_text_list1[5], 16) * 3600) + (int(hex_text_list1[6], 16) * 60) + int(hex_text_list1[7], 16) + add
+    hour = times // 3600
+    min = times // 60 - hour * 60
+    sec = times - hour * 3600 - min * 60
+    print("aaaaaaaa",hour,min,sec)
+    print("aaaaaaaaa",hex(hour)[2:].zfill(2),hex(min)[2:].zfill(2),hex(sec)[2:].zfill(2))
+    return list2str(save1) + hex(hour)[2:].zfill(2) + hex(min)[2:].zfill(2) + hex(sec)[2:].zfill(2)
+
+
+def time_cacl(hex_text1, hex_text2, gaps):
+    hex_text_list1 = makestr(hex_text1).split(" ")
+    save1 = hex_text_list1[0:5]
+    times1 = int(hex_text_list1[5], 16) * 3600 + int(hex_text_list1[6], 16) * 60 + int(hex_text_list1[7], 16)
+
+    hex_text_list2 = makestr(hex_text2).split(" ")
+    save2 = hex_text_list2[0:5]
+    times2 = int(hex_text_list2[5], 16) * 3600 + int(hex_text_list2[6], 16) * 60 + int(hex_text_list2[7], 16)
+
+    count = (times1 - times2) // gaps + 1
+    return count
+
+
 def list_append(list_):
     text = ''
     for i in list_:
