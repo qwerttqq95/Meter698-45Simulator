@@ -85,7 +85,9 @@ def Analysis(code):
 
         code_remain = code[4:]
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
-        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list,Curve_gaps_times_multi,OI_list_re
+        if SA_len_num == 0:
+            return 1
+        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list,Curve_gaps_times_multi,OI_list_re,count_re
         Curve_gaps_times_multi = 0
         OI_list_re = [" "]
         relen = 0
@@ -94,6 +96,7 @@ def Analysis(code):
         data_list = []
         curve_list = []
         frozenSign = 0
+        count_re = 1
         SA_num_len = code_remain[0:1 + SA_len_num]
         print('SA_num_len:', SA_num_len)
         global black_white_SA_address  # 收到报文的地址
@@ -230,7 +233,7 @@ def Analysis(code):
 
 
 def Information(num, detail, APDU):
-    global service_code, LargeOAD, GetRequestNormal_0501
+    global service_code, LargeOAD, GetRequestNormal_0501,relen
     service_code = APDU[0]
     if num == '01':
         print(num, '预链接请求')
@@ -362,10 +365,12 @@ def Information(num, detail, APDU):
             print('ERROR:85??')
     elif num == '06':
         print(num, '设置请求')
+        return None
     elif num == '86':
         print(num, '设置响应')
     elif num == '07':
         print(num, '操作请求')
+        return None
     elif num == '87':
         print(num, '操作响应')
     elif num == '08':
@@ -530,6 +535,7 @@ def RSD(remain):
         Data(reMessage1[0], reMessage1[1:])
         reMessage2 = Data(reMessage1[8], reMessage1[9:])  # 收到的冻结时间
         count_re = Comm.time_cacl(curve_list[1], curve_list[0], Curve_gaps_times)
+        print("count_re:",count_re)
         relen = 0
         return reMessage2
     if remain[0] == '09':
@@ -546,6 +552,7 @@ def RCSD(remain_len, args):
     backup_args = args
     backup_len = lens
     global count_re
+    print("count_re rcsd:", count_re)
     for x in range(count_re):
         args = backup_args
         lens = backup_len
@@ -792,6 +799,7 @@ def SASign(num):
 
     else:
         print('3 广播地址')
+        return 0
     # print(' 逻辑地址: ', num[2], num[3])
     numadd1 = int(num[4:], base=2)
     print('地址长度 N: ', numadd1 + 1)
@@ -1045,7 +1053,6 @@ class ReturnMessage():
             SequenceOf_ARecordRow(Daily_freeze)
 
         if auto_curve_sign == 1 and newOI == '50020200_20210200' and sele != 9:
-            # todo
             global curve_list, Curve_gaps_times, Curve_gaps_times_multi
             print('自动曲线时标')
             print('curve_newOI', newOI)
@@ -1206,3 +1213,4 @@ plus_645 = 0
 curve_list = []
 OI_list_re = [" "]
 Curve_gaps_times_multi = 0
+count_re = 1

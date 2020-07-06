@@ -297,7 +297,7 @@
             <bool>false</bool>
            </property>
            <property name="placeholderText">
-            <string>包含载波搜表回复地址,白名单关闭或搜表帧用全A回复地址为:000000000001</string>
+            <string/>
            </property>
           </widget>
          </item>

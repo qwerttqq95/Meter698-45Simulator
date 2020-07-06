@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.70')
+        self.setWindowTitle('模拟表程序 v1.71')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,18 +45,28 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        self.ui.textEdit.append("v1.7说明:\n"
+        self.ui.textEdit.append(
+                                "v1.71说明:\n"
                                 "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
                                 "2.模拟表数据可在'config.ini'中修改,格式为'utf-8'.\n"
                                 "3.新增06000001特殊处理.\n"
                                 "4.修改698规约搜表策略.\n"
-                                "5.添加高级功能.\n"
-                                "6.修改黑名单bug.\n")
+                                "5.添加针对645规约的高级功能(doing).\n"
+                                "6.修改黑名单bug.\n"
+                                "7.修复15分钟曲线返回缺点问题(小时待改).\n"
+                                "8.SET与ACTION指令不识别\n"
+                                "更新地址ftp://172.18.51.79\n"
+        )
         self.find_new_vesion_thread()
-
         self.ui.pushButton_3.clicked.connect(self.advance_change_text)
         self.ui.plainTextEdit.setReadOnly(1)
         self.ui.groupBox.setHidden(1)
+        self.ui.checkBox_2.setEnabled(0)#高级功能
+
+        self.ui.comboBox_3.hide()
+        self.ui.label_3.hide()
+        self.ui.comboBox_4.hide()
+        self.ui.label_4.hide()
 
     def advance_change_text(self):
         if self.ui.pushButton_3.text() == "上线":
@@ -339,7 +349,7 @@ class Connect(threading.Thread):
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
         if sent == 1:
-            message = "抄表地址在黑名单内不予返回或存在不支持项,具体原因在打印中查看"
+            message = "解析遇到问题,可能抄表地址在黑名单内不予返回或存在不支持项"
             MainWindow._signal_text.emit(message)
             MainWindow.log_session(message)
             LargeOAD = ''
@@ -521,7 +531,7 @@ class Config(QDialog):
                 text = MainWindow.ui.textEdit.toPlainText()
                 f.write(text)
         except:
-            QMessageBox.about(self, 'ERROR', '文件保存失败')
+            QMessageBox.about(self, 'ERROR', '文件保存取消或失败')
 
     def clear(self):
         x = self.ui.tableWidget.rowCount() - 1
