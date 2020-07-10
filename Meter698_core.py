@@ -1,6 +1,49 @@
 import Comm, time, traceback, configparser, random, Meter645_core, re
 
 
+def Re_priority(data, fulltext_list):
+    """
+
+    :type fulltext_list: list
+    """
+    list_ = fulltext_list.copy()
+    code = Comm.makelist(data)
+    re_ = check(code)
+    if re_ == 0:
+        print("re=0")
+        SA_add = code[5:11]
+        print("SA_add ",SA_add)
+        print("fulltext_list ",list_)
+        print("code",code)
+        i = 5
+        for x in range(6):
+            list_[i] = code[i]
+            i += 1
+        while 1:
+            if list_[-1] != "16":
+                if list_.__len__()==1:
+                    return "EE"
+                list_.pop()
+
+            else:break
+        if list_.__len__()<15:
+            return "FF"
+        list_.pop()
+        list_.pop()
+        full_message = Comm.strto0x(list_)
+        FCS = str(hex(Comm.pppfcs16(0xffff, full_message, len(full_message)))).zfill(4)[2:]
+        if len(FCS) == 3:
+            FCS = '0' + FCS
+        FCS = FCS[2:] + FCS[0:2]
+        if len(FCS) == 2:
+            FCS = FCS + '00'
+        if FCS[0] == "x":
+            FCS = '0' + FCS[1:]
+        print("FCS: ", FCS)
+        x = Comm.list2str(list_).replace("\n", "") + FCS + "16"
+        return x
+
+
 def check(code):
     if len(code) < 20:
         print('不符合698长度', code)
@@ -87,7 +130,7 @@ def Analysis(code):
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
         if SA_len_num == 0:
             return 1
-        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list,Curve_gaps_times_multi,OI_list_re,count_re
+        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list, Curve_gaps_times_multi, OI_list_re, count_re
         Curve_gaps_times_multi = 0
         OI_list_re = [" "]
         relen = 0
@@ -233,7 +276,7 @@ def Analysis(code):
 
 
 def Information(num, detail, APDU):
-    global service_code, LargeOAD, GetRequestNormal_0501,relen
+    global service_code, LargeOAD, GetRequestNormal_0501, relen
     service_code = APDU[0]
     if num == '01':
         print(num, '预链接请求')
@@ -535,7 +578,7 @@ def RSD(remain):
         Data(reMessage1[0], reMessage1[1:])
         reMessage2 = Data(reMessage1[8], reMessage1[9:])  # 收到的冻结时间
         count_re = Comm.time_cacl(curve_list[1], curve_list[0], Curve_gaps_times)
-        print("count_re:",count_re)
+        print("count_re:", count_re)
         relen = 0
         return reMessage2
     if remain[0] == '09':
@@ -730,7 +773,7 @@ def Data(DataDescribe, args):
             global Daily_freeze, curve_list
             Daily_freeze = '1c' + Comm.list2str(args[0:7])  # 冻结返回时间
             curve_list.append(Daily_freeze)
-            print('Daily_freeze', Daily_freeze,curve_list)
+            print('Daily_freeze', Daily_freeze, curve_list)
             global Difference
             Difference = abs(int(time.strftime('%m%d'), 10) - (mouth * 100 + day))
 
@@ -1057,11 +1100,11 @@ class ReturnMessage():
             print('自动曲线时标')
             print('curve_newOI', newOI)
             self.save(['50020200_20210200', '自动曲线冻结', ''])
-            print("curve_list",curve_list)
+            print("curve_list", curve_list)
             x = Comm.time_add(curve_list[0], Curve_gaps_times_multi * Curve_gaps_times)
-            print("x: ",x)
+            print("x: ", x)
             SequenceOf_ARecordRow(x)
-            Curve_gaps_times_multi +=1
+            Curve_gaps_times_multi += 1
 
         if auto_day_frozon_sign == 1 and newOI == '50320200_20210200' and sele != 9:
             print('自动直流日冻结时标')

@@ -17,11 +17,11 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.71')
+        self.setWindowTitle('模拟表程序 v1.72')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
-                warn = QMessageBox.warning(self, '警告', '未检测到串口', QMessageBox.Reset | QMessageBox.Cancel)
+                warn = QMessageBox.warning(self, '警告', '未检测到串口,软件无法启动', QMessageBox.Reset | QMessageBox.Cancel)
                 if warn == QMessageBox.Cancel:
                     self.close()
                 if warn == QMessageBox.Reset:
@@ -45,28 +45,54 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        self.ui.textEdit.append(
-                                "v1.71说明:\n"
-                                "1.搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.\n"
-                                "2.模拟表数据可在'config.ini'中修改,格式为'utf-8'.\n"
-                                "3.新增06000001特殊处理.\n"
-                                "4.修改698规约搜表策略.\n"
-                                "5.添加针对645规约的高级功能(doing).\n"
-                                "6.修改黑名单bug.\n"
-                                "7.修复15分钟曲线返回缺点问题(小时待改).\n"
-                                "8.SET与ACTION指令不识别\n"
-                                "更新地址ftp://172.18.51.79\n"
-        )
+        update_detail_text = "v1.72说明:\n"
+        update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
+                         "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
+                         "目前698规约支持的ROAD有:5002,5004,5005,5006",
+                         "SET与ACTION指令不识别.",
+                         "645规约处理支持06000001.",
+                         "添加针对645规约的时间同步功能(doing).",
+                         "添加针对698规约的唯一返回功能"
+                         "修改黑名单bug(地址范围'-'问题待改).",
+                         "修复15分钟曲线返回缺点问题(小时待改).",
+                         "添加698规约高精度数据,删除旧'config.ini'后生效.",
+                         "每次更新后建议删除同目录的'config.ini'",
+                         "内网更新地址: ftp://172.18.51.79"
+                         ]
+        seq = 1
+        for x in update_detail:
+            update_detail_text = update_detail_text + (str(seq) + "." + x + "\n")
+            seq += 1
+        self.ui.textEdit.append(update_detail_text)
         self.find_new_vesion_thread()
         self.ui.pushButton_3.clicked.connect(self.advance_change_text)
         self.ui.plainTextEdit.setReadOnly(1)
         self.ui.groupBox.setHidden(1)
-        self.ui.checkBox_2.setEnabled(0)#高级功能
+        self.ui.checkBox_2.setEnabled(1)  # 高级功能
 
         self.ui.comboBox_3.hide()
         self.ui.label_3.hide()
         self.ui.comboBox_4.hide()
         self.ui.label_4.hide()
+
+        self.ui.checkBox_4.clicked.connect(self.retur_only)
+        self.priority = 0
+        self.exchange_reonly = []
+        self.ui.plainTextEdit_2.cursorPositionChanged.connect(self.SetExchange_reonly)
+
+    def SetExchange_reonly(self):
+        self.ui.checkBox_4.setEnabled(1)
+        self.exchange_reonly = makestr(self.ui.plainTextEdit_2.toPlainText().replace(" ", "")).split(" ")
+
+    def retur_only(self):
+        if self.ui.checkBox_4.isChecked():
+            if self.ui.plainTextEdit_2.toPlainText() != "" and self.ui.plainTextEdit_2.toPlainText().__len__() > 0:
+                self.exchange_reonly = makestr(
+                    self.ui.plainTextEdit_2.toPlainText().replace(" ", "").replace("\n", "")).split(" ")
+                self.priority = 1
+
+        else:
+            self.priority = 0
 
     def advance_change_text(self):
         if self.ui.pushButton_3.text() == "上线":
@@ -78,7 +104,6 @@ class MainWindow(QMainWindow):
             time.sleep(2)
             del self.pro
             self.ui.pushButton_3.setText("上线")
-
 
     def advance_show_message(self, text):
         self.ui.plainTextEdit.appendPlainText(text)
@@ -257,7 +282,7 @@ class Connect(threading.Thread):
         while 1:
             if self.__runflag.isSet():
                 try:
-                    revalue = self.serial_open()
+                    revalue = self.serial_open
                     print('revalue', revalue)
                     if revalue == 1:
                         print('clear')
@@ -275,6 +300,7 @@ class Connect(threading.Thread):
                 self.__runflag.wait()
                 print('sleep1')
 
+    @property
     def serial_open(self):
         if self.serial.isOpen() is True:
             print('close')
@@ -289,8 +315,12 @@ class Connect(threading.Thread):
                 self.serial.open()
                 MainWindow.ui.pushButton.setText('关闭')
                 print('启动')
+                self.p = MainWindow.exchange_reonly.copy()
+
                 global data
                 data = ''
+                self.Meter = Meter698_core
+                TryTimes = 10
                 while self.__runflag.isSet():
                     time.sleep(0.2)
                     if MainWindow.ui.pushButton.text() == '启动':
@@ -304,9 +334,29 @@ class Connect(threading.Thread):
                                 Received_data = '收到:\n' + makestr(data)
                                 MainWindow._signal_text.emit(Received_data)
                                 MainWindow.log_session(Received_data)
-                                self.Meter = Meter698_core
-                                sent = self.Meter.Analysis(data.replace(' ', ''))
-                                self._Sent(sent)
+
+                                if MainWindow.priority == 1:
+                                    print("priority1 ",self.p)
+                                    sent = self.Meter.Re_priority(data.replace(' ', ''), self.p)
+                                    self.serial.write(a2b_hex(sent))
+                                    print("发送",sent)
+                                    sent = '发送:\n' + makestr(sent)
+                                    MainWindow._signal_text.emit(sent)
+                                    MainWindow.log_session(sent)
+                                    ct = time.time()
+                                    local_time = time.localtime(ct)
+                                    data_head = time.strftime("%H:%M:%S", local_time)
+                                    data_secs = (ct - int(ct)) * 1000
+                                    time_stamp = "%s.%3d" % (data_head, data_secs)
+                                    MainWindow._signal_text.emit(time_stamp)
+                                    MainWindow.log_session(time_stamp)
+                                    MainWindow._signal_text.emit('--------------------------------')
+                                    MainWindow.log_session('--------------------------------')
+                                    data = ''
+
+                                else:
+                                    sent = self.Meter.Analysis(data.replace(' ', ''))
+                                    self._Sent(sent)
                                 continue
                             else:
                                 try:
@@ -322,8 +372,18 @@ class Connect(threading.Thread):
                                         if data[0] == '6' and data[1] == '8':
                                             if Meter698_core.check(makelist(data)) == 0:
                                                 print('找出有效报文', data)
+                                                while 1:
+                                                    if data[-1] == '6' and data[-2] == '1' :
+                                                        break
+                                                    else:
+                                                        data = data[0:-1]
                                                 break
                                             else:
+                                                if TryTimes<0:
+                                                    TryTimes = 10
+                                                    data=""
+                                                    break
+                                                TryTimes -=1
                                                 print('不完整报文!继续接收:', data)
                                                 break
                                         if data[0] == 'f' and data[1] == 'e':
