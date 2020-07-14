@@ -12,25 +12,40 @@ def Re_priority(data, fulltext_list):
     if re_ == 0:
         print("re=0")
         SA_add = code[5:11]
-        print("SA_add ",SA_add)
-        print("fulltext_list ",list_)
-        print("code",code)
+        print("SA_add ", SA_add)
+        print("fulltext_list ", list_)
+        print("code", code)
         i = 5
-        for x in range(6):
+        for x in range(6): #换地址
             list_[i] = code[i]
             i += 1
         while 1:
             if list_[-1] != "16":
-                if list_.__len__()==1:
+                if list_.__len__() == 1:
                     return "EE"
                 list_.pop()
 
-            else:break
-        if list_.__len__()<15:
+            else:
+                break
+        if list_.__len__() < 15:
             return "FF"
+        list_.pop() #去掉检验
         list_.pop()
         list_.pop()
-        full_message = Comm.strto0x(list_)
+
+        head_message = Comm.strto0x(list_[1:12])
+        HCS = str(hex(Comm.pppfcs16(0xffff, head_message, len(head_message)))).zfill(4)[2:]
+        if len(HCS) == 3:
+            HCS = '0' + HCS
+        HCS = HCS[2:] + HCS[0:2]
+        if len(HCS) == 2:
+            HCS = HCS + '00'
+        print("HCS: ", HCS)
+        HCS_list = Comm.makestr(HCS).split(" ")
+        list_[12] = HCS_list[0]
+        list_[13] = HCS_list[1]
+
+        full_message = Comm.strto0x(list_[1:])
         FCS = str(hex(Comm.pppfcs16(0xffff, full_message, len(full_message)))).zfill(4)[2:]
         if len(FCS) == 3:
             FCS = '0' + FCS
@@ -42,6 +57,9 @@ def Re_priority(data, fulltext_list):
         print("FCS: ", FCS)
         x = Comm.list2str(list_).replace("\n", "") + FCS + "16"
         return x
+
+    print("645 pri")
+    return "FFEE"
 
 
 def check(code):
@@ -91,8 +109,8 @@ def B_W_add(stat, add):
     elif stat == 2:
         b_w_stat = 2
         black_white_SA_address = add.replace(' ', '')
-        black_white_SA_address = black_white_SA_address.split('/')
-        white = black_white_SA_address
+        black_white_SA_address_list = black_white_SA_address.split('/')
+        white = black_white_SA_address_list
     print('B_W_add:', black_white_SA_address)
     Meter645_core.B_W_add(stat, add)
 
@@ -130,7 +148,7 @@ def Analysis(code):
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
         if SA_len_num == 0:
             return 1
-        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list, Curve_gaps_times_multi, OI_list_re, count_re
+        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list, Curve_gaps_times_multi, OI_list_re, count_re,Recive_add
         Curve_gaps_times_multi = 0
         OI_list_re = [" "]
         relen = 0
@@ -142,16 +160,14 @@ def Analysis(code):
         count_re = 1
         SA_num_len = code_remain[0:1 + SA_len_num]
         print('SA_num_len:', SA_num_len)
-        global black_white_SA_address  # 收到报文的地址
-        black_white_SA_address = Comm.list2str(SA_num_len[::-1][0:SA_len_num])
-        print('black_white_SA_address', black_white_SA_address)
-        print('black_white_SA_address a?', black_white_SA_address.find('a'))
-        black_white_SA_address_makestr = Comm.makelist(black_white_SA_address)
 
-        if b_w_stat == 0 and black_white_SA_address.find('a') > -1:
+        Recive_add = Comm.list2str(SA_num_len[::-1][0:SA_len_num])  # 收到报文的地址
+        print('Recive_add', Recive_add)
+
+        if b_w_stat == 0 and Recive_add.find('a') > -1:
             print("blocked")
             return 3
-        if black_white_SA_address.find('a') == -1:
+        if Recive_add.find('a') == -1:
             if b_w_stat == 1:
                 for add in black:
                     print('add: ', add)
@@ -160,12 +176,12 @@ def Analysis(code):
                         start = int(add_range[0])
                         end = int(add_range[1])
                         print("start: ", start, "end: ", end)
-                        if start <= int(black_white_SA_address) <= end:
+                        if start <= int(Recive_add) <= end:
                             print('检测到黑名单地址范围')
                             return 1
                         else:
                             continue
-                    elif add == black_white_SA_address:
+                    elif add == Recive_add:
                         return 1
             elif b_w_stat == 2:
                 num = 0
@@ -176,33 +192,33 @@ def Analysis(code):
                         start = int(add_range[0])
                         end = int(add_range[1])
                         print("start: ", start, "end: ", end)
-                        if start <= int(black_white_SA_address) <= end:
+                        if start <= int(Recive_add) <= end:
                             print('检测到白名单地址范围')
                             num = -1
                             break
                         else:
                             num = 1
-                    elif add == black_white_SA_address:
+                    elif add == Recive_add:
                         print('发现白名单')
                         num = -1
                         break
                     else:
                         num = 1
-                print("白名单判断 ", black_white_SA_address, num)
+                print("白名单判断 ", Recive_add, num)
                 if num != 1:
                     print('通过')
                 else:
                     print('不通过')
                     return 1
         else:
-            print(" find a")
+            print("find a")
             global match_add
-            if black_white_SA_address != 'aaaaaaaaaaaa':
+            if Recive_add != 'aaaaaaaaaaaa':
                 if b_w_stat == 2:
                     whitelist = []
                     find_aa = 0
                     match = 0
-                    black_white_SA_address_makelist = Comm.makelist(black_white_SA_address)
+                    black_white_SA_address_makelist = Comm.makelist(Recive_add)
                     for x in range(6):
                         if black_white_SA_address_makelist[x] == 'aa':
                             find_aa += 1
@@ -222,10 +238,9 @@ def Analysis(code):
                                 x_makelist = int(Comm.list2str(Comm.makelist(str(x).zfill(12))[find_aa:]))
                                 print('matching', black_white_SA_address_makelist_int, x_makelist)
                                 if black_white_SA_address_makelist_int == x_makelist:
-                                    print('match')
                                     match = 1
-
                                     match_add = x
+                                    print('match',x)
                                     break
                             if match == 0:
                                 return 1
@@ -246,7 +261,11 @@ def Analysis(code):
                     return 1
             else:
                 global trans
-                trans = white[0]
+                if white[0].find('-') > 0:
+                    add_1 = white[0].split('-')
+                    trans = add_1[0]
+                else:
+                    trans = white[0]
         CA = code_remain[1 + SA_len_num:][0]
         HCS = code_remain[1 + SA_len_num:][1] + code_remain[1 + SA_len_num:][2]
         APDU = code_remain[1 + SA_len_num:][3:-3]
@@ -271,7 +290,7 @@ def Analysis(code):
             return 3
         global OI
         OI = text[1:]
-        black_white_SA_address = Comm.list2str(Meter645_core.address[::-1])
+        Recive_add = Comm.list2str(Meter645_core.address[::-1])
         return text[0]
 
 
@@ -875,18 +894,18 @@ class ReturnMessage():
         self.conf_new.read('config.ini', encoding='utf-8')
 
     def head(self):
-        global SA_num
+        global SA_num,match_add
         self.ctrlzone = 'c3'
         self.add = Comm.list2str(SA_num_len)
         if SA_num == 0:
             if self.add.find('a') > -1:
-                self.add = '05' + Comm.list2str(Comm.makelist(self.Re_add())[::-1])
+                self.add = '05' + Comm.list2str(Comm.makelist(str(match_add))[::-1])
                 print('add', self.add)
         elif SA_num == 1:
             if self.add.find('a') == -1:
                 pass
             else:
-                self.add = '05' + Comm.list2str(Comm.makelist(self.Re_add())[::-1])
+                self.add = '05' + Comm.list2str(Comm.makelist(str(match_add))[::-1])
             print('add', self.add)
         self.CA = '00'
         self.totallenth()
@@ -1037,18 +1056,18 @@ class ReturnMessage():
             print('compose_data ERROR')
             return 0
 
-    def Re_add(self):
-        global _max, trans
-        compose = open('source\\698data', 'r', encoding='UTF-8', errors='ignore')
-        while 1:
-            text = compose.readline()
-            text = text.split(' ')
-            if text[0] == '40010200' or text[0] == '40020200':
-                compose.close()
-                te = trans
-                print('Re_add return', te)
-                break
-        return te
+    # def Re_add(self):
+    #     global _max, trans
+    #     compose = open('source\\698data', 'r', encoding='UTF-8', errors='ignore')
+    #     while 1:
+    #         text = compose.readline()
+    #         text = text.split(' ')
+    #         if text[0] == '40010200' or text[0] == '40020200':
+    #             compose.close()
+    #             te = trans
+    #             print('Re_add return:', te)
+    #             break
+    #     return te
 
     def save(self, text):
         global OI
@@ -1257,3 +1276,5 @@ curve_list = []
 OI_list_re = [" "]
 Curve_gaps_times_multi = 0
 count_re = 1
+Recive_add=""
+match_add=0

@@ -53,7 +53,8 @@ class MainWindow(QMainWindow):
                          "645规约处理支持06000001.",
                          "添加针对645规约的时间同步功能(doing).",
                          "添加针对698规约的唯一返回功能"
-                         "修改黑名单bug(地址范围'-'问题待改).",
+                         "修改黑名单bug(使用地址范围'-'时,范围不要太大).",
+                         "接收报文策略修改",
                          "修复15分钟曲线返回缺点问题(小时待改).",
                          "添加698规约高精度数据,删除旧'config.ini'后生效.",
                          "每次更新后建议删除同目录的'config.ini'",
@@ -444,7 +445,7 @@ class Connect(threading.Thread):
             self.Meter.ReturnMessage()
             content = self.Meter.ReturnMessage().transport()
             # print('content:', content)
-            message = '数据标识:' + get_list_sum(content) + '\n表地址:' + Meter698_core.black_white_SA_address  # 显示
+            message = '数据标识:' + get_list_sum(content) + '\n表地址:' + Meter698_core.Recive_add  # 显示
             sent = '发送:\n' + makestr(sent)
             MainWindow._signal_text.emit(message)
             MainWindow.log_session(message)
@@ -492,7 +493,7 @@ class Config(QDialog):
         self.ui.checkBox_5.setToolTip('明文回复附带MAC‘0A0B0C0D’')
         self.ui.checkBox_6.clicked.connect(self.Curve_leak)
 
-    def running(self):
+    def running(self):#save
         if self.bw() == False:
             QMessageBox.warning(self, "警告", "黑白名单不能为空")
             return
@@ -500,13 +501,13 @@ class Config(QDialog):
         self.get_auto_curve_frozon()
         self.get_auto_increase()
         self.get_auto_increase_5004020000100200()
-        self.list_save()
+        # self.list_save()
         self.set_max()
         self.set_mac()
         self.sent_from_to()
         self.event_special()
         self.plus()
-        Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')
+        Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')#事件
         self.close()
 
     def plus(self):
@@ -676,22 +677,6 @@ class Config(QDialog):
             self.ui.tableWidget.insertRow(x)
         self.ui.tableWidget.removeRow(x)
 
-    def list_save(self):
-        try:
-            x = self.ui.tableWidget.rowCount() - 1
-            while x:
-                y = 0
-                text_0 = self.ui.tableWidget.item(x, y).text()
-                text_1 = ''
-                while y < 2:
-                    y += 1
-                    text_1 = text_1 + ' ' + self.ui.tableWidget.item(x, y).text()
-                text_1 = text_1
-                self.conf.set('MeterData698', text_0, text_1)
-                x -= 1
-            self.conf.write(open('config.ini', 'w', encoding='utf-8'))
-        except:
-            print_exc(file=open('bug.txt', 'a+'))
 
 
 if __name__ == '__main__':

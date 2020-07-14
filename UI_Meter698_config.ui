@@ -23,6 +23,9 @@
    <string>设置</string>
   </property>
   <widget class="QTabWidget" name="tabWidget">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -308,6 +311,9 @@
     </widget>
    </widget>
    <widget class="QWidget" name="tab_2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <attribute name="title">
      <string>698数据标识</string>
     </attribute>

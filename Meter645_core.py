@@ -225,6 +225,7 @@ def deal_receive(message):
                 D = '343333333333'
                 add = Comm.makelist(white[0])[::-1]
                 text = '68' + Comm.list2str(add) + '68' + reconctrlcode + L + D
+                print("text: ",text)
                 cs = CS(strto0x(Comm.makelist(text)), None)
                 text = text + cs + '16'
                 print("返回发送", text)
