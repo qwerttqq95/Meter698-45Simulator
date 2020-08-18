@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QDialog, QTa
     QPushButton
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QIcon
-from Comm import makestr, get_list_sum, makelist
+from Comm import makestr, get_list_sum, makelist, list2str
 from binascii import b2a_hex, a2b_hex
 from traceback import print_exc
 
@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.72')
+        self.setWindowTitle('模拟表程序 v1.73')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,17 +45,18 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        update_detail_text = "v1.72说明:\n"
+        update_detail_text = "v1.73说明:\n"
         update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
                          "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
                          "目前698规约支持的ROAD有:5002,5004,5005,5006",
                          "SET与ACTION指令不识别.",
                          "645规约处理支持06000001.",
                          "添加针对645规约的时间同步功能(doing).",
-                         "添加针对698规约的唯一返回功能"
+                         "添加针对698规约的唯一返回功能",
                          "修改黑名单bug(使用地址范围'-'时,范围不要太大).",
                          "接收报文策略修改",
                          "修复15分钟曲线返回缺点问题(小时待改).",
+                         "串口接收机制修改",
                          "添加698规约高精度数据,删除旧'config.ini'后生效.",
                          "每次更新后建议删除同目录的'config.ini'",
                          "内网更新地址: ftp://172.18.51.79"
@@ -291,8 +292,6 @@ class Connect(threading.Thread):
                         MainWindow.Show_Hidden('0')
                         MainWindow.ui.pushButton.setText('启动')
                         continue
-                    if revalue is None:
-                        continue
                 except:
                     print('ERROR')
                     print_exc(file=open('bug.txt', 'a+'))
@@ -302,7 +301,7 @@ class Connect(threading.Thread):
                 print('sleep1')
 
     @property
-    def serial_open(self):
+    def serial_open2(self):
         if self.serial.isOpen() is True:
             print('close')
             self.serial.close()
@@ -337,10 +336,10 @@ class Connect(threading.Thread):
                                 MainWindow.log_session(Received_data)
 
                                 if MainWindow.priority == 1:
-                                    print("priority1 ",self.p)
+                                    print("priority1 ", self.p)
                                     sent = self.Meter.Re_priority(data.replace(' ', ''), self.p)
                                     self.serial.write(a2b_hex(sent))
-                                    print("发送",sent)
+                                    print("发送", sent)
                                     sent = '发送:\n' + makestr(sent)
                                     MainWindow._signal_text.emit(sent)
                                     MainWindow.log_session(sent)
@@ -374,17 +373,17 @@ class Connect(threading.Thread):
                                             if Meter698_core.check(makelist(data)) == 0:
                                                 print('找出有效报文', data)
                                                 while 1:
-                                                    if data[-1] == '6' and data[-2] == '1' :
+                                                    if data[-1] == '6' and data[-2] == '1':
                                                         break
                                                     else:
                                                         data = data[0:-1]
                                                 break
                                             else:
-                                                if TryTimes<0:
+                                                if TryTimes < 0:
                                                     TryTimes = 10
-                                                    data=""
+                                                    data = ""
                                                     break
-                                                TryTimes -=1
+                                                TryTimes -= 1
                                                 print('不完整报文!继续接收:', data)
                                                 break
                                         if data[0] == 'f' and data[1] == 'e':
@@ -406,11 +405,124 @@ class Connect(threading.Thread):
                 print('无法打开串口')
                 print_exc(file=open('bug.txt', 'a+'))
                 return 1
+    @property
+    def serial_open(self):
+        if self.serial.isOpen() is True:
+            print('close')
+            self.serial.close()
+            return 1
+        else:
+            try:
+                self.serial.port = MainWindow.ui.comboBox.currentText()
+                self.serial.baudrate = int(MainWindow.ui.comboBox_2.currentText())
+                self.serial.parity = MainWindow.ui.comboBox_3.currentText()
+                self.serial.stopbits = int(MainWindow.ui.comboBox_4.currentText())
+                self.serial.timeout = 1
+                self.serial.open()
+                MainWindow.ui.pushButton.setText('关闭')
+                print('启动')
+                self.p = MainWindow.exchange_reonly.copy()
+
+                global data
+                data = ''
+                messageLen = 0
+                Notstand645 = 0
+                self.Meter = Meter698_core
+                Try=""
+                while self.__runflag.isSet():
+                    time.sleep(0.2)
+                    if MainWindow.ui.pushButton.text() == '启动':
+                        break
+                    num = self.serial.inWaiting()
+                    data = data + str(b2a_hex(self.serial.read(num)))[2:-1]
+                    try:
+                        if data != '' and data.__len__() > 20:
+                            deal = str(data)
+
+                            if deal.__contains__("68"):
+                                while deal.__contains__("68"):
+                                    if deal[0] == "6" and deal[1] == "8":
+                                        break
+                                    else:
+                                        deal=deal[2:]
+                            else:
+                                continue
+                            print("deal:"+makestr(deal))
+                            # 645
+                            if deal[0] == '6' and deal[1] == '8' and deal[14] == "6" and deal[15] == "8":
+                                dealList = makelist(deal)
+                                dealList_len = int(dealList[9],16)
+                                print("dealList_len",dealList_len)
+                                if len(dealList)< 9+dealList_len+2+1:
+                                    continue
+                                if dealList[9+dealList_len+2]=="16":
+                                    Received_data = list2str(dealList[0:9+dealList_len+3])
+                                    sent = self.Meter.Analysis(Received_data.replace(' ', ''))
+                                    Received_data = '收到:\n' + makestr(Received_data)
+                                    MainWindow._signal_text.emit(Received_data)
+                                    MainWindow.log_session(Received_data)
+                                    self._Sent(sent)
+                                    data = data[(9+dealList_len+3)*2:]
+                                    continue
+                            else:
+                                print("Notstand645")
+                                Notstand645=1
+                            # 698
+
+                            dealstr = makestr(deal).split(" ")
+                            if dealstr[3]!= "43" and Notstand645==1:
+                                print("Notstand698")
+                                data = data[2:]
+
+                            messageLen = (int(dealstr[2], 16) << 8) + int(dealstr[1],16) + 2
+                            if messageLen == 0 or messageLen>150:
+                                data = data[2:]
+                                continue
+                            if dealstr.__len__() >= messageLen:
+                                if dealstr[messageLen - 1] == "16":
+                                    findMessage = list2str(dealstr[0:messageLen])
+                                    print('Received: ', findMessage)
+                                    Received_data = '收到:\n' + makestr(findMessage)
+                                    MainWindow._signal_text.emit(Received_data)
+                                    MainWindow.log_session(Received_data)
+
+                                if MainWindow.priority == 1:
+                                    print("priority1 ", self.p)
+                                    sent = self.Meter.Re_priority(Received_data.replace(' ', ''), self.p)
+                                    self.serial.write(a2b_hex(sent))
+                                    print("发送", sent)
+                                    sent = '发送:\n' + makestr(sent)
+                                    MainWindow._signal_text.emit(sent)
+                                    MainWindow.log_session(sent)
+                                    ct = time.time()
+                                    local_time = time.localtime(ct)
+                                    data_head = time.strftime("%H:%M:%S", local_time)
+                                    data_secs = (ct - int(ct)) * 1000
+                                    time_stamp = "%s.%3d" % (data_head, data_secs)
+                                    MainWindow._signal_text.emit(time_stamp)
+                                    MainWindow.log_session(time_stamp)
+                                    MainWindow._signal_text.emit('--------------------------------')
+                                    MainWindow.log_session('--------------------------------')
+
+                                else:
+                                    sent = self.Meter.Analysis(findMessage.replace(' ', ''))
+                                    self._Sent(sent)
+                                    data = data[messageLen:]
+                                    continue
+                    except:
+                        print_exc(file=open('bug.txt', 'a+'))
+                        continue
+            except:
+                MainWindow._signal_text.emit('ERROR')
+                print('无法打开串口')
+                print_exc(file=open('bug.txt', 'a+'))
+                return 1
 
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
+        print("sent_:",sent)
         if sent == 1:
-            message = "解析遇到问题,可能抄表地址在黑名单内不予返回或存在不支持项"
+            message = "不予返回,抄表地址在黑名单内或存在不支持项"
             MainWindow._signal_text.emit(message)
             MainWindow.log_session(message)
             LargeOAD = ''
@@ -431,15 +543,6 @@ class Connect(threading.Thread):
             self.Meter.ReturnMessage().clear_OI()
             MainWindow._signal_text.emit('--------------------------------')
             MainWindow.log_session('--------------------------------')
-        # elif sent == 2:
-        #     message = "2130为旧规约,不返回内容"
-        #     MainWindow._signal_text.emit(message)
-        #     MainWindow.log_session(message)
-        #     LargeOAD = ''
-        #     data_list = []
-        #     data = ''
-        #     frozenSign = 0
-        #     self.Meter.ReturnMessage().clear_OI()
         elif sent != 1:
             self.serial.write(a2b_hex(sent))
             self.Meter.ReturnMessage()
@@ -493,7 +596,7 @@ class Config(QDialog):
         self.ui.checkBox_5.setToolTip('明文回复附带MAC‘0A0B0C0D’')
         self.ui.checkBox_6.clicked.connect(self.Curve_leak)
 
-    def running(self):#save
+    def running(self):  # save
         if self.bw() == False:
             QMessageBox.warning(self, "警告", "黑白名单不能为空")
             return
@@ -507,7 +610,7 @@ class Config(QDialog):
         self.sent_from_to()
         self.event_special()
         self.plus()
-        Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')#事件
+        Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')  # 事件
         self.close()
 
     def plus(self):
@@ -676,7 +779,6 @@ class Config(QDialog):
             x += 1
             self.ui.tableWidget.insertRow(x)
         self.ui.tableWidget.removeRow(x)
-
 
 
 if __name__ == '__main__':

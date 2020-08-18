@@ -348,7 +348,7 @@ class Ui_Dialog(object):
         self.groupBox.setTitle(_translate("Dialog", "抄表log导出为:"))
         self.pushButton_5.setText(_translate("Dialog", "txt格式"))
         self.groupBox_3.setTitle(_translate("Dialog", "About："))
-        self.label_2.setText(_translate("Dialog", "Version：V1.6"))
+        self.label_2.setText(_translate("Dialog", "Version：V1.7"))
         self.label_3.setText(_translate("Dialog", "Frame：200427"))
         self.groupBox_5.setTitle(_translate("Dialog", "645说明:"))
         self.textEdit_3.setHtml(_translate("Dialog", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"

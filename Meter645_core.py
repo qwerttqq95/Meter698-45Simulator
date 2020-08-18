@@ -284,7 +284,7 @@ def deal_receive(message):
         reconctrlcode = '9400'
         D = ''
         text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
-        print('Sending:', text)
+        print('Sending:', Comm.makestr(text))
         return (text, 'SET', 'TRUE')
     data_len_ = int(message[9], 16)
     datasign = message[10:14]
@@ -321,5 +321,5 @@ def deal_receive(message):
         L = hex(4 + len(Comm.makelist(returnstr)))[2:].zfill(2)
         print("长度:", hex(4 + len(Comm.makelist(returnstr)))[2:])
         text = returnframe(Comm.list2str(address), reconctrlcode, L, D, returnstr)
-        print('Sending:', text)
+        print('Sending:', Comm.makestr(text))
     return (text, OI + " " + a[1], a[0])
