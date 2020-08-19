@@ -1056,19 +1056,6 @@ class ReturnMessage():
             print('compose_data ERROR')
             return 0
 
-    # def Re_add(self):
-    #     global _max, trans
-    #     compose = open('source\\698data', 'r', encoding='UTF-8', errors='ignore')
-    #     while 1:
-    #         text = compose.readline()
-    #         text = text.split(' ')
-    #         if text[0] == '40010200' or text[0] == '40020200':
-    #             compose.close()
-    #             te = trans
-    #             print('Re_add return:', te)
-    #             break
-    #     return te
-
     def save(self, text):
         global OI
         OI = OI + text[0:2]
