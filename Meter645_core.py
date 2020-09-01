@@ -223,7 +223,10 @@ def deal_receive(message):
                 reconctrlcode = '93'
                 L = '06'
                 D = '343333333333'
-                add = Comm.makelist(white[0])[::-1]
+                if white[0].__contains__("-"):
+                    add= Comm.makelist((white[0].split("-"))[0])[::-1]
+                else:
+                    add = Comm.makelist(white[0])[::-1]
                 text = '68' + Comm.list2str(add) + '68' + reconctrlcode + L + D
                 print("text: ",text)
                 cs = CS(strto0x(Comm.makelist(text)), None)

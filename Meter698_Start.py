@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.73')
+        self.setWindowTitle('模拟表程序 v1.74')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        update_detail_text = "v1.73说明:\n"
+        update_detail_text = "v1.74说明:\n"
         update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
                          "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
                          "目前698规约支持的ROAD有:5002,5004,5005,5006",
@@ -53,9 +53,10 @@ class MainWindow(QMainWindow):
                          "645规约处理支持06000001.",
                          "在高级功能中添加针对698规约的唯一返回功能",
                          "修改黑名单bug(使用地址范围'-'时,范围不要太大,会使运行过慢).",
-                         "接收报文策略修改",
+                         "接收报文策略修改.",
                          "修复15分钟曲线返回缺点问题(小时待改).",
-                         "串口接收机制修改",
+                         "串口接收机制修改.",
+                         "极小概率校验计算错误.",
                          "添加了698规约的高精度数据,删除旧'config.ini'后生效.",
                          "每次更新后建议删除同目录的'config.ini'",
                          "内网更新地址: ftp://172.18.51.79"
@@ -324,7 +325,7 @@ class Connect(threading.Thread):
                 self.Meter = Meter698_core
                 Try=""
                 while self.__runflag.isSet():
-                    time.sleep(0.1)
+                    # time.sleep(0.1)
                     if MainWindow.ui.pushButton.text() == '启动':
                         break
                     num = self.serial.inWaiting()
@@ -347,27 +348,35 @@ class Connect(threading.Thread):
                             if deal[0] == '6' and deal[1] == '8' and deal[14] == "6" and deal[15] == "8" :
                                 dealList = makelist(deal)
                                 dealList_len = int(dealList[9],16)
-                                print("dealList_len",dealList_len)
+                                # print("dealList_len",dealList_len)
                                 if len(dealList)< 9+dealList_len+2+1:
                                     continue
                                 if dealList[9+dealList_len+2]=="16":
+
                                     Received_data = list2str(dealList[0:9+dealList_len+3])
                                     sent = self.Meter.Analysis(Received_data.replace(' ', ''))
                                     Received_data = '收到:\n' + makestr(Received_data)
+                                    print(Received_data)
                                     MainWindow._signal_text.emit(Received_data)
                                     MainWindow.log_session(Received_data)
                                     self._Sent(sent)
                                     data = data[(9+dealList_len+3)*2:]
                                     continue
                             else:
-                                print("Notstand645")
+                                print("Notstand645",deal)
                                 Notstand645=1
                             # 698
 
                             dealstr = makestr(deal).split(" ")
                             if dealstr[3]!= "43" and Notstand645==1:
-                                print("Notstand698")
+                                print("Notstand698",deal)
+                                while data.__len__()>4:
+                                    if data[0] == "6" and data[1] == "8":
+                                        break
+                                    else:
+                                        data=data[2:]
                                 data = data[2:]
+                                continue
 
                             messageLen = (int(dealstr[2], 16) << 8) + int(dealstr[1],16) + 2
                             if messageLen == 0 or messageLen>150:
@@ -415,6 +424,7 @@ class Connect(threading.Thread):
 
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
+        print("sent:",sent)
         if sent == 1:
             message = "不予返回,抄表地址在黑名单内或存在不支持项"
             MainWindow._signal_text.emit(message)
@@ -438,6 +448,9 @@ class Connect(threading.Thread):
             MainWindow._signal_text.emit('--------------------------------')
             MainWindow.log_session('--------------------------------')
         elif sent != 1:
+            if sent.__len__() % 2 != 0:
+                print("sent: ERROR")
+                return
             self.serial.write(a2b_hex(sent))
             self.Meter.ReturnMessage()
             content = self.Meter.ReturnMessage().transport()

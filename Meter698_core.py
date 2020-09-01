@@ -16,7 +16,7 @@ def Re_priority(data, fulltext_list):
         print("fulltext_list ", list_)
         print("code", code)
         i = 5
-        for x in range(6): #换地址
+        for x in range(6):  # 换地址
             list_[i] = code[i]
             i += 1
         while 1:
@@ -29,12 +29,13 @@ def Re_priority(data, fulltext_list):
                 break
         if list_.__len__() < 15:
             return "FF"
-        list_.pop() #去掉检验
+        list_.pop()  # 去掉检验
         list_.pop()
         list_.pop()
 
         head_message = Comm.strto0x(list_[1:12])
         HCS = str(hex(Comm.pppfcs16(0xffff, head_message, len(head_message)))).zfill(4)[2:]
+        HCS.replace("x", "")
         if len(HCS) == 3:
             HCS = '0' + HCS
         HCS = HCS[2:] + HCS[0:2]
@@ -148,7 +149,7 @@ def Analysis(code):
         SA_len_num = SASign(Comm.dec2bin(int(code_remain[0], 16)).zfill(8))
         if SA_len_num == 0:
             return 1
-        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list, Curve_gaps_times_multi, OI_list_re, count_re,Recive_add
+        global SA_num_len, LargeOAD, relen, data, data_list, frozenSign, b_w_stat, black, white, curve_list, Curve_gaps_times_multi, OI_list_re, count_re, Recive_add
         Curve_gaps_times_multi = 0
         OI_list_re = [" "]
         relen = 0
@@ -240,7 +241,7 @@ def Analysis(code):
                                 if black_white_SA_address_makelist_int == x_makelist:
                                     match = 1
                                     match_add = x
-                                    print('match',x)
+                                    print('match', x)
                                     break
                             if match == 0:
                                 return 1
@@ -264,8 +265,10 @@ def Analysis(code):
                 if white[0].find('-') > 0:
                     add_1 = white[0].split('-')
                     trans = add_1[0]
+                    match_add = trans
                 else:
                     trans = white[0]
+                    match_add = trans
         CA = code_remain[1 + SA_len_num:][0]
         HCS = code_remain[1 + SA_len_num:][1] + code_remain[1 + SA_len_num:][2]
         APDU = code_remain[1 + SA_len_num:][3:-3]
@@ -894,23 +897,24 @@ class ReturnMessage():
         self.conf_new.read('config.ini', encoding='utf-8')
 
     def head(self):
-        global SA_num,match_add
+        global SA_num, match_add
         self.ctrlzone = 'c3'
         self.add = Comm.list2str(SA_num_len)
         if SA_num == 0:
             if self.add.find('a') > -1:
                 self.add = '05' + Comm.list2str(Comm.makelist(str(match_add))[::-1])
-                print('add', self.add)
+                print('add1', self.add)
         elif SA_num == 1:
             if self.add.find('a') == -1:
                 pass
             else:
                 self.add = '05' + Comm.list2str(Comm.makelist(str(match_add))[::-1])
-            print('add', self.add)
+            print('add2', self.add)
         self.CA = '00'
         self.totallenth()
 
     def totallenth(self):
+        print("self.ctrlzone , self.add , self.CA:", self.ctrlzone, self.add, self.CA)
         self.total = self.ctrlzone + self.add + self.CA
         global LargeOAD, SecType
         print('完整的APDU ', LargeOAD)
@@ -934,6 +938,7 @@ class ReturnMessage():
 
         self.head_message = Comm.strto0x(Comm.makelist(APDU_len[2:] + APDU_len[0:2] + self.total))
         self.HCS = str(hex(Comm.pppfcs16(0xffff, self.head_message, len(self.head_message)))).zfill(4)[2:]
+        self.HCS = self.HCS.replace("x", "")
         if len(self.HCS) == 3:
             self.HCS = '0' + self.HCS
         self.HCS = self.HCS[2:] + self.HCS[0:2]
@@ -943,6 +948,7 @@ class ReturnMessage():
         LargeOAD = APDU_len[2:] + APDU_len[0:2] + self.total + self.HCS + LargeOAD
         self.full_message = Comm.strto0x(Comm.makelist(LargeOAD))
         self.FCS = str(hex(Comm.pppfcs16(0xffff, self.full_message, len(self.full_message)))).zfill(4)[2:]
+        self.FCS = self.FCS.replace("x", "")
         if len(self.FCS) == 3:
             self.FCS = '0' + self.FCS
         self.FCS = self.FCS[2:] + self.FCS[0:2]
@@ -952,7 +958,10 @@ class ReturnMessage():
             self.FCS = '0' + self.FCS[1:]
         print("FCS: ", self.FCS)
         LargeOAD = '68' + LargeOAD + self.FCS + '16'
+        if LargeOAD.__len__()%2 != 0:
+            print("发送报文: ERROR")
         print('发送报文:', LargeOAD, '\n')
+
 
     def Full_LargeOAD(self):
         global LargeOAD
@@ -973,7 +982,7 @@ class ReturnMessage():
         relen += 1
 
     def compose_data(self, OI):
-        global LargeOAD, auto_increase, trans, SA_num_len
+        global LargeOAD, auto_increase, trans, SA_num_len,match_add
         try:
             self.get = self.conf_new.get('MeterData698', OI)
             self.get = self.get.split(' ')
@@ -1003,7 +1012,7 @@ class ReturnMessage():
                 #                 trans = str(int(y / 100) * 100 + add_aa_2).zfill(12)
 
                 #                 print('compose_data_trans', trans)
-                global match_add
+
                 self.message = OI + '01' + '0906' + match_add
                 SA_num_len = '05' + Comm.list2str(Comm.makelist(match_add)[::-1])
                 print('message', self.message)
@@ -1012,7 +1021,7 @@ class ReturnMessage():
             if Comm.list2str(SA_num_len).find('a') == -1:
                 trans = Comm.list2str(SA_num_len[1:][::-1])
             else:
-                trans = str(int(text[2][6::])).zfill(12)
+                trans =   Comm.list2str(Comm.makelist(str(match_add))[::-1])
             print('compose_data_trans', trans)
             self.message = OI + '01' + '0906' + trans
             print('message', self.message)
@@ -1263,5 +1272,5 @@ curve_list = []
 OI_list_re = [" "]
 Curve_gaps_times_multi = 0
 count_re = 1
-Recive_add=""
-match_add=0
+Recive_add = ""
+match_add = 0
