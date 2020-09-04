@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.74')
+        self.setWindowTitle('模拟表程序 v1.75')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        update_detail_text = "v1.74说明:\n"
+        update_detail_text = "v1.75说明:\n"
         update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
                          "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
                          "目前698规约支持的ROAD有:5002,5004,5005,5006",
@@ -57,6 +57,7 @@ class MainWindow(QMainWindow):
                          "修复15分钟曲线返回缺点问题(小时待改).",
                          "串口接收机制修改.",
                          "极小概率校验计算错误.",
+                         "新增698表数据域回空功能.",
                          "添加了698规约的高精度数据,删除旧'config.ini'后生效.",
                          "每次更新后建议删除同目录的'config.ini'",
                          "内网更新地址: ftp://172.18.51.79"
@@ -323,9 +324,9 @@ class Connect(threading.Thread):
                 messageLen = 0
                 Notstand645 = 0
                 self.Meter = Meter698_core
-                Try=""
+                Try = ""
                 while self.__runflag.isSet():
-                    # time.sleep(0.1)
+                    time.sleep(0.1)
                     if MainWindow.ui.pushButton.text() == '启动':
                         break
                     num = self.serial.inWaiting()
@@ -339,47 +340,46 @@ class Connect(threading.Thread):
                                     if deal[0] == "6" and deal[1] == "8":
                                         break
                                     else:
-                                        deal=deal[2:]
+                                        deal = deal[2:]
                             else:
                                 continue
                             # 645
                             if len(deal) < 20:
                                 continue
-                            if deal[0] == '6' and deal[1] == '8' and deal[14] == "6" and deal[15] == "8" :
+                            if deal[0] == '6' and deal[1] == '8' and deal[14] == "6" and deal[15] == "8":
                                 dealList = makelist(deal)
-                                dealList_len = int(dealList[9],16)
+                                dealList_len = int(dealList[9], 16)
                                 # print("dealList_len",dealList_len)
-                                if len(dealList)< 9+dealList_len+2+1:
+                                if len(dealList) < 9 + dealList_len + 2 + 1:
                                     continue
-                                if dealList[9+dealList_len+2]=="16":
-
-                                    Received_data = list2str(dealList[0:9+dealList_len+3])
+                                if dealList[9 + dealList_len + 2] == "16":
+                                    Received_data = list2str(dealList[0:9 + dealList_len + 3])
                                     sent = self.Meter.Analysis(Received_data.replace(' ', ''))
                                     Received_data = '收到:\n' + makestr(Received_data)
                                     print(Received_data)
                                     MainWindow._signal_text.emit(Received_data)
                                     MainWindow.log_session(Received_data)
                                     self._Sent(sent)
-                                    data = data[(9+dealList_len+3)*2:]
+                                    data = data[(9 + dealList_len + 3) * 2:]
                                     continue
                             else:
-                                print("Notstand645",deal)
-                                Notstand645=1
+                                # print("Notstand645",deal)
+                                Notstand645 = 1
                             # 698
 
                             dealstr = makestr(deal).split(" ")
-                            if dealstr[3]!= "43" and Notstand645==1:
-                                print("Notstand698",deal)
-                                while data.__len__()>4:
+                            if dealstr[3] != "43" and Notstand645 == 1:
+                                # print("Notstand698",deal)
+                                while data.__len__() > 4:
                                     if data[0] == "6" and data[1] == "8":
                                         break
                                     else:
-                                        data=data[2:]
+                                        data = data[2:]
                                 data = data[2:]
                                 continue
 
-                            messageLen = (int(dealstr[2], 16) << 8) + int(dealstr[1],16) + 2
-                            if messageLen == 0 or messageLen>150:
+                            messageLen = (int(dealstr[2], 16) << 8) + int(dealstr[1], 16) + 2
+                            if messageLen == 0 or messageLen > 150:
                                 data = data[2:]
                                 continue
                             if dealstr.__len__() >= messageLen:
@@ -424,7 +424,7 @@ class Connect(threading.Thread):
 
     def _Sent(self, sent):
         global data, LargeOAD, frozenSign, data_list
-        print("sent:",sent)
+        print("sent:", sent)
         if sent == 1:
             message = "不予返回,抄表地址在黑名单内或存在不支持项"
             MainWindow._signal_text.emit(message)
@@ -485,13 +485,13 @@ class Config(QDialog):
         self.ui = UI_Meter698_config.Ui_Dialog()
         self.ui.setupUi(self)
         self.ui.pushButton.clicked.connect(self.running)
-        self.ui.pushButton_3.clicked.connect(self.list_increas)
-        self.ui.pushButton_4.clicked.connect(self.list_decreas)
-        self.conf = configparser.ConfigParser()
-        self.deal_list()
-        self.ui.pushButton_6.clicked.connect(self.clear)
+        # self.ui.pushButton_3.clicked.connect(self.list_increas)
+        # self.ui.pushButton_4.clicked.connect(self.list_decreas)
+        # self.conf = configparser.ConfigParser()
+        # self.deal_list()
+        # self.ui.pushButton_6.clicked.connect(self.clear)
         self.ui.pushButton_5.clicked.connect(self.output_log)
-        self.get_max()
+        # self.get_max()
         self.setWindowIcon(QIcon('source/taxi.ico'))
         self.setFixedSize(self.width(), self.height())
         self.setWindowFlags(Qt.WindowStaysOnTopHint and Qt.MSWindowsFixedSizeDialogHint)
@@ -503,6 +503,7 @@ class Config(QDialog):
         self.ui.checkBox_5.setToolTip('明文回复附带MAC‘0A0B0C0D’')
         self.ui.checkBox_6.clicked.connect(self.Curve_leak)
 
+
     def running(self):  # save
         if self.bw() == False:
             QMessageBox.warning(self, "警告", "黑白名单不能为空")
@@ -512,12 +513,13 @@ class Config(QDialog):
         self.get_auto_increase()
         self.get_auto_increase_5004020000100200()
         # self.list_save()
-        self.set_max()
+        # self.set_max()
         self.set_mac()
         self.sent_from_to()
         self.event_special()
         self.plus()
         Meter698_core.event_blacklist = self.ui.lineEdit_22.text().split(';')  # 事件
+        self.ReturnNull()
         self.close()
 
     def plus(self):
@@ -562,14 +564,14 @@ class Config(QDialog):
         else:
             self.from_to = []
             Meter698_core.set_from_to(self.from_to)
+    #
+    # def get_max(self):
+    #     self.ui.lineEdit.setText(str(Meter698_core.re_max()))
 
-    def get_max(self):
-        self.ui.lineEdit.setText(str(Meter698_core.re_max()))
-
-    def set_max(self):
-        text = self.ui.lineEdit.displayText()
-        print('通配地址数量:', text)
-        Meter698_core.change_max(text)
+    # def set_max(self):
+    #     text = self.ui.lineEdit.displayText()
+    #     print('通配地址数量:', text)
+    #     Meter698_core.change_max(text)
 
     def bw(self):
         re_ = self.black_and_white()
@@ -604,12 +606,12 @@ class Config(QDialog):
         except:
             QMessageBox.about(self, 'ERROR', '文件保存取消或失败')
 
-    def clear(self):
-        x = self.ui.tableWidget.rowCount() - 1
-        while x:
-            self.ui.tableWidget.removeRow(x)
-            x -= 1
-        self.deal_list()
+    # def clear(self):
+    #     x = self.ui.tableWidget.rowCount() - 1
+    #     while x:
+    #         self.ui.tableWidget.removeRow(x)
+    #         x -= 1
+    #     self.deal_list()
 
     def get_auto_day_frozon(self):
         print('self.ui.checkBox.isChecked()', self.ui.checkBox.isChecked())
@@ -662,31 +664,36 @@ class Config(QDialog):
             Meter698_core.add_mac(0)
         return self.ui.checkBox_5.isChecked()
 
-    def list_increas(self):
-        num = self.ui.tableWidget.currentRow()
-        self.ui.tableWidget.insertRow(num)
+    # def list_increas(self):
+    #     num = self.ui.tableWidget.currentRow()
+    #     self.ui.tableWidget.insertRow(num)
+    #
+    # def list_decreas(self):
+    #     num = self.ui.tableWidget.currentRow()
+    #     self.ui.tableWidget.removeRow(num)
 
-    def list_decreas(self):
-        num = self.ui.tableWidget.currentRow()
-        self.ui.tableWidget.removeRow(num)
+    # def deal_list(self):
+    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
+    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
+    #     self.conf.read('config.ini', encoding='utf-8')
+    #     x = 0  # 行
+    #     text = self.conf.items('MeterData698')
+    #     for items in text:
+    #         y = 0
+    #         self.ui.tableWidget.setItem(x, y, QTableWidgetItem(items[0]))
+    #         for item in items[1].split(' '):
+    #             y += 1
+    #             self.ui.tableWidget.setItem(x, y, QTableWidgetItem(item))
+    #         x += 1
+    #         self.ui.tableWidget.insertRow(x)
+    #     self.ui.tableWidget.removeRow(x)
 
-    def deal_list(self):
-        self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self.ui.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-        self.ui.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-        self.conf.read('config.ini', encoding='utf-8')
-        x = 0  # 行
-        text = self.conf.items('MeterData698')
-        for items in text:
-            y = 0
-            self.ui.tableWidget.setItem(x, y, QTableWidgetItem(items[0]))
-            for item in items[1].split(' '):
-                y += 1
-                self.ui.tableWidget.setItem(x, y, QTableWidgetItem(item))
-            x += 1
-            self.ui.tableWidget.insertRow(x)
-        self.ui.tableWidget.removeRow(x)
-
+    def ReturnNull(self):
+        if self.ui.checkBox_8.isChecked():
+           Meter698_core.ReturnIsNULL=True
+        else:
+            Meter698_core.ReturnIsNULL = False
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -59,7 +59,7 @@
        <x>10</x>
        <y>30</y>
        <width>175</width>
-       <height>160</height>
+       <height>161</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -195,37 +195,11 @@
        </widget>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <property name="leftMargin">
-         <number>5</number>
+       <widget class="QCheckBox" name="checkBox_8">
+        <property name="text">
+         <string>698表数据域返回空</string>
         </property>
-        <property name="rightMargin">
-         <number>14</number>
-        </property>
-        <item>
-         <widget class="QLabel" name="label">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>通配地址数量:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -308,124 +282,6 @@
        </item>
       </layout>
      </widget>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <attribute name="title">
-     <string>698数据标识</string>
-    </attribute>
-    <widget class="QTableWidget" name="tableWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>611</width>
-       <height>271</height>
-      </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="verticalScrollBarPolicy">
-      <enum>Qt::ScrollBarAsNeeded</enum>
-     </property>
-     <property name="sizeAdjustPolicy">
-      <enum>QAbstractScrollArea::AdjustToContents</enum>
-     </property>
-     <property name="dragEnabled">
-      <bool>false</bool>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::NoSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <property name="gridStyle">
-      <enum>Qt::SolidLine</enum>
-     </property>
-     <property name="sortingEnabled">
-      <bool>true</bool>
-     </property>
-     <property name="rowCount">
-      <number>1</number>
-     </property>
-     <attribute name="horizontalHeaderCascadingSectionResizes">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderDefaultSectionSize">
-      <number>224</number>
-     </attribute>
-     <attribute name="horizontalHeaderMinimumSectionSize">
-      <number>110</number>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <row/>
-     <column>
-      <property name="text">
-       <string>数据标识</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>名称</string>
-      </property>
-     </column>
-     <column>
-      <property name="text">
-       <string>值</string>
-      </property>
-      <property name="textAlignment">
-       <set>AlignCenter</set>
-      </property>
-     </column>
-    </widget>
-    <widget class="QWidget" name="layoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
-       <y>270</y>
-       <width>239</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="statusTip">
-         <string/>
-        </property>
-        <property name="whatsThis">
-         <string/>
-        </property>
-        <property name="text">
-         <string>+</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="text">
-         <string>-</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton_6">
-        <property name="text">
-         <string>刷新</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
@@ -615,7 +471,7 @@
          <x>11</x>
          <y>25</y>
          <width>171</width>
-         <height>62</height>
+         <height>51</height>
         </rect>
        </property>
        <layout class="QFormLayout" name="formLayout">
@@ -669,9 +525,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00
-                       00
-                   </string>
+       <string>85 01 00 33 20 02 00 01 01 04 51 30 1b 02 00 51 30 2a 02 00 51 30 13 02 00 51 30 11 02 00 00 00</string>
       </property>
       <property name="frame">
        <bool>true</bool>
@@ -680,7 +534,7 @@
        <enum>QLineEdit::Normal</enum>
       </property>
       <property name="cursorPosition">
-       <number>0</number>
+       <number>95</number>
       </property>
      </widget>
     </widget>
@@ -737,7 +591,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Version：V1.6</string>
+       <string>Version：V1.7</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_3">
@@ -750,7 +604,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>Frame：200427</string>
+       <string>Frame：200904</string>
       </property>
      </widget>
     </widget>
@@ -786,11 +640,6 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                       &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;                        &lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回年月日周:@GetDateWeek@                        &lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回当前时间:@GetTime@                        &lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;返回冻结时标(当前):@FreezeTime@                    &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

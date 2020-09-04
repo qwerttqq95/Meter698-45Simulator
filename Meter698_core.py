@@ -396,10 +396,15 @@ def Information(num, detail, APDU):
             else:
                 global Curve_gaps_times, count_re, OI_list_re
                 relen = OI_list_re.__len__() - 1
-                LargeOAD = str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '01' + str(count_re).zfill(
-                    2)
-                # print('data_list', data_list)
-                LargeOAD = datatype + LargeOAD + Comm.list_append(data_list) + '0000'
+                print("ReturnIsNULL ",ReturnIsNULL)
+                if ReturnIsNULL:
+                    LargeOAD = datatype+str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + "01000000"
+                else:
+                    LargeOAD = str(returnvalue) + '0200' + hex(relen)[2:].zfill(2) + LargeOAD + '01' + str(count_re).zfill(
+                        2)
+                    # print('data_list', data_list)
+
+                    LargeOAD = datatype + LargeOAD + Comm.list_append(data_list) + '0000'
 
             ReturnMessage().head()
             # print('data_list', Comm.list_append(data_list))
@@ -958,10 +963,9 @@ class ReturnMessage():
             self.FCS = '0' + self.FCS[1:]
         print("FCS: ", self.FCS)
         LargeOAD = '68' + LargeOAD + self.FCS + '16'
-        if LargeOAD.__len__()%2 != 0:
+        if LargeOAD.__len__() % 2 != 0:
             print("发送报文: ERROR")
         print('发送报文:', LargeOAD, '\n')
-
 
     def Full_LargeOAD(self):
         global LargeOAD
@@ -982,7 +986,7 @@ class ReturnMessage():
         relen += 1
 
     def compose_data(self, OI):
-        global LargeOAD, auto_increase, trans, SA_num_len,match_add
+        global LargeOAD, auto_increase, trans, SA_num_len, match_add
         try:
             self.get = self.conf_new.get('MeterData698', OI)
             self.get = self.get.split(' ')
@@ -1021,7 +1025,7 @@ class ReturnMessage():
             if Comm.list2str(SA_num_len).find('a') == -1:
                 trans = Comm.list2str(SA_num_len[1:][::-1])
             else:
-                trans =   Comm.list2str(Comm.makelist(str(match_add))[::-1])
+                trans = Comm.list2str(Comm.makelist(str(match_add))[::-1])
             print('compose_data_trans', trans)
             self.message = OI + '01' + '0906' + trans
             print('message', self.message)
@@ -1274,3 +1278,4 @@ Curve_gaps_times_multi = 0
 count_re = 1
 Recive_add = ""
 match_add = 0
+ReturnIsNULL = False
