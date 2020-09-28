@@ -946,6 +946,11 @@ class ReturnMessage():
         self.HCS = self.HCS.replace("x", "")
         if len(self.HCS) == 3:
             self.HCS = '0' + self.HCS
+        if len(self.HCS) == 2:
+            self.HCS = '00' + self.HCS
+        if len(self.HCS) == 1:
+            self.HCS = '000' + self.HCS
+
         self.HCS = self.HCS[2:] + self.HCS[0:2]
         if len(self.HCS) == 2:
             self.HCS = self.HCS + '00'
@@ -956,6 +961,10 @@ class ReturnMessage():
         self.FCS = self.FCS.replace("x", "")
         if len(self.FCS) == 3:
             self.FCS = '0' + self.FCS
+        if len(self.FCS) == 2:
+            self.FCS = '00' + self.FCS
+        if len(self.FCS) == 1:
+            self.FCS = '000' + self.FCS
         self.FCS = self.FCS[2:] + self.FCS[0:2]
         if len(self.FCS) == 2:
             self.FCS = self.FCS + '00'

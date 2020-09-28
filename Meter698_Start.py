@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.75')
+        self.setWindowTitle('模拟表程序 v1.78')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,20 +45,14 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        update_detail_text = "v1.75说明:\n"
+        update_detail_text = "v1.78说明:\n"
         update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
                          "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
                          "目前698规约支持的ROAD有:5002,5004,5005,5006",
                          "SET与ACTION指令不识别.",
                          "645规约处理支持06000001.",
-                         "在高级功能中添加针对698规约的唯一返回功能",
-                         "修改黑名单bug(使用地址范围'-'时,范围不要太大,会使运行过慢).",
-                         "接收报文策略修改.",
-                         "修复15分钟曲线返回缺点问题(小时待改).",
-                         "串口接收机制修改.",
-                         "极小概率校验计算错误.",
-                         "新增698表数据域回空功能.",
-                         "添加了698规约的高精度数据,删除旧'config.ini'后生效.",
+                         "修复了15分钟曲线返回缺点问题(小时待改).",
+                         "解决了极小概率校验计算错误的问题.",
                          "每次更新后建议删除同目录的'config.ini'",
                          "内网更新地址: ftp://172.18.51.79"
                          ]
@@ -85,7 +79,7 @@ class MainWindow(QMainWindow):
 
     def SetExchange_reonly(self):
         self.ui.checkBox_4.setEnabled(1)
-        self.exchange_reonly = makestr(self.ui.plainTextEdit_2.toPlainText().replace(" ", "")).split(" ")
+        self.exchange_reonly = makestr(self.ui.plainTextEdit_2.toPlainText().replace(" ", "").replace("\n", "")).split(" ")
 
     def retur_only(self):
         if self.ui.checkBox_4.isChecked():
@@ -392,21 +386,25 @@ class Connect(threading.Thread):
 
                                 if MainWindow.priority == 1:
                                     print("priority1 ", self.p)
-                                    sent = self.Meter.Re_priority(Received_data.replace(' ', ''), self.p)
-                                    self.serial.write(a2b_hex(sent))
-                                    print("发送", sent)
-                                    sent = '发送:\n' + makestr(sent)
-                                    MainWindow._signal_text.emit(sent)
-                                    MainWindow.log_session(sent)
-                                    ct = time.time()
-                                    local_time = time.localtime(ct)
-                                    data_head = time.strftime("%H:%M:%S", local_time)
-                                    data_secs = (ct - int(ct)) * 1000
-                                    time_stamp = "%s.%3d" % (data_head, data_secs)
-                                    MainWindow._signal_text.emit(time_stamp)
-                                    MainWindow.log_session(time_stamp)
-                                    MainWindow._signal_text.emit('--------------------------------')
-                                    MainWindow.log_session('--------------------------------')
+                                    sent = self.Meter.Re_priority((makestr(findMessage)).replace(' ', ''), self.p)
+                                    self._Sent(sent)
+                                    data = data[messageLen:]
+
+                                    # self.serial.write(a2b_hex(sent))
+                                    # print("发送", sent)
+                                    # sent = '发送:\n' + makestr(sent)
+                                    # MainWindow._signal_text.emit(sent)
+                                    # MainWindow.log_session(sent)
+                                    # ct = time.time()
+                                    # local_time = time.localtime(ct)
+                                    # data_head = time.strftime("%H:%M:%S", local_time)
+                                    # data_secs = (ct - int(ct)) * 1000
+                                    # time_stamp = "%s.%3d" % (data_head, data_secs)
+                                    # MainWindow._signal_text.emit(time_stamp)
+                                    # MainWindow.log_session(time_stamp)
+                                    # MainWindow._signal_text.emit('--------------------------------')
+                                    # MainWindow.log_session('--------------------------------')
+                                    continue
 
                                 else:
                                     sent = self.Meter.Analysis(findMessage.replace(' ', ''))
@@ -417,7 +415,6 @@ class Connect(threading.Thread):
                         print_exc(file=open('bug.txt', 'a+'))
                         continue
             except:
-                MainWindow._signal_text.emit('ERROR')
                 print('无法打开串口')
                 print_exc(file=open('bug.txt', 'a+'))
                 return 1

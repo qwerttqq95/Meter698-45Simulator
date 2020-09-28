@@ -267,6 +267,7 @@ def deal_receive(message):
                             num = 1
                     elif add == Comm.list2str(address[::-1]):
                         print('发现白名单')
+                        num=0
                         break
                     else:
                         num = 1
