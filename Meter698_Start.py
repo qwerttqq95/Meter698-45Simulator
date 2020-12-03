@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.78')
+        self.setWindowTitle('模拟表程序 v1.79.1')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:
@@ -45,16 +45,16 @@ class MainWindow(QMainWindow):
         self.ui.pushButton_2.setToolTip('清空当前窗口记录')
         self.ui.toolButton.setToolTip('设置')
         self.ui.label_5.setText('')
-        update_detail_text = "v1.78说明:\n"
+        update_detail_text = "说明:\n"
         update_detail = ["搜表需添加白名单,支持698规约搜表,不支持645规约地址域非全A搜表方式.",
                          "模拟表数据可在'config.ini'中修改,格式为'utf-8'.",
-                         "目前698规约支持的ROAD有:5002,5004,5005,5006",
+                         "目前698规约支持的ROAD有:5002,5004,5005,5006,5032",
                          "SET与ACTION指令不识别.",
                          "645规约处理支持06000001.",
                          "修复了15分钟曲线返回缺点问题(小时待改).",
-                         "解决了极小概率校验计算错误的问题.",
+                         "00100200递增功能的增量等于软件打开运行的时间",
                          "每次更新后建议删除同目录的'config.ini'",
-                         "内网更新地址: ftp://172.18.51.79"
+                         "内网更新地址: ftp://172.18.51.79",
                          ]
         seq = 1
         for x in update_detail:
@@ -79,7 +79,8 @@ class MainWindow(QMainWindow):
 
     def SetExchange_reonly(self):
         self.ui.checkBox_4.setEnabled(1)
-        self.exchange_reonly = makestr(self.ui.plainTextEdit_2.toPlainText().replace(" ", "").replace("\n", "")).split(" ")
+        self.exchange_reonly = makestr(self.ui.plainTextEdit_2.toPlainText().replace(" ", "").replace("\n", "")).split(
+            " ")
 
     def retur_only(self):
         if self.ui.checkBox_4.isChecked():
@@ -371,7 +372,6 @@ class Connect(threading.Thread):
                                         data = data[2:]
                                 data = data[2:]
                                 continue
-
                             messageLen = (int(dealstr[2], 16) << 8) + int(dealstr[1], 16) + 2
                             if messageLen == 0 or messageLen > 150:
                                 data = data[2:]
@@ -383,27 +383,11 @@ class Connect(threading.Thread):
                                     Received_data = '收到:\n' + makestr(findMessage)
                                     MainWindow._signal_text.emit(Received_data)
                                     MainWindow.log_session(Received_data)
-
                                 if MainWindow.priority == 1:
                                     print("priority1 ", self.p)
                                     sent = self.Meter.Re_priority((makestr(findMessage)).replace(' ', ''), self.p)
                                     self._Sent(sent)
                                     data = data[messageLen:]
-
-                                    # self.serial.write(a2b_hex(sent))
-                                    # print("发送", sent)
-                                    # sent = '发送:\n' + makestr(sent)
-                                    # MainWindow._signal_text.emit(sent)
-                                    # MainWindow.log_session(sent)
-                                    # ct = time.time()
-                                    # local_time = time.localtime(ct)
-                                    # data_head = time.strftime("%H:%M:%S", local_time)
-                                    # data_secs = (ct - int(ct)) * 1000
-                                    # time_stamp = "%s.%3d" % (data_head, data_secs)
-                                    # MainWindow._signal_text.emit(time_stamp)
-                                    # MainWindow.log_session(time_stamp)
-                                    # MainWindow._signal_text.emit('--------------------------------')
-                                    # MainWindow.log_session('--------------------------------')
                                     continue
 
                                 else:
@@ -500,7 +484,6 @@ class Config(QDialog):
         self.ui.checkBox_5.setToolTip('明文回复附带MAC‘0A0B0C0D’')
         self.ui.checkBox_6.clicked.connect(self.Curve_leak)
 
-
     def running(self):  # save
         if self.bw() == False:
             QMessageBox.warning(self, "警告", "黑白名单不能为空")
@@ -561,6 +544,7 @@ class Config(QDialog):
         else:
             self.from_to = []
             Meter698_core.set_from_to(self.from_to)
+
     #
     # def get_max(self):
     #     self.ui.lineEdit.setText(str(Meter698_core.re_max()))
@@ -631,6 +615,7 @@ class Config(QDialog):
             Meter698_core.curve_frozon(0)
         return self.ui.checkBox_2.isChecked()
 
+    # 00100200递增
     def get_auto_increase(self):
         print('increase', self.ui.checkBox_3.isChecked())
         if self.ui.checkBox_3.isChecked() is True:
@@ -661,36 +646,12 @@ class Config(QDialog):
             Meter698_core.add_mac(0)
         return self.ui.checkBox_5.isChecked()
 
-    # def list_increas(self):
-    #     num = self.ui.tableWidget.currentRow()
-    #     self.ui.tableWidget.insertRow(num)
-    #
-    # def list_decreas(self):
-    #     num = self.ui.tableWidget.currentRow()
-    #     self.ui.tableWidget.removeRow(num)
-
-    # def deal_list(self):
-    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeToContents)
-    #     self.ui.tableWidget.horizontalHeader().setSectionResizeMode(2, QHeaderView.Stretch)
-    #     self.conf.read('config.ini', encoding='utf-8')
-    #     x = 0  # 行
-    #     text = self.conf.items('MeterData698')
-    #     for items in text:
-    #         y = 0
-    #         self.ui.tableWidget.setItem(x, y, QTableWidgetItem(items[0]))
-    #         for item in items[1].split(' '):
-    #             y += 1
-    #             self.ui.tableWidget.setItem(x, y, QTableWidgetItem(item))
-    #         x += 1
-    #         self.ui.tableWidget.insertRow(x)
-    #     self.ui.tableWidget.removeRow(x)
-
     def ReturnNull(self):
         if self.ui.checkBox_8.isChecked():
-           Meter698_core.ReturnIsNULL=True
+            Meter698_core.ReturnIsNULL = True
         else:
             Meter698_core.ReturnIsNULL = False
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

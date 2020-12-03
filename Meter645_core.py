@@ -82,18 +82,20 @@ def CS(list, b=None):
             print('校验错误')
     return sum
 
-def CS_new(list,b=None):
+
+def CS_new(list, b=None):
     sum = 0
     while list:
-        sum = sum + int(list.pop(),16)
+        sum = sum + int(list.pop(), 16)
     sum = hex(sum & 0xff)[2:].zfill(2)
-    print('校验 ',sum)
+    print('校验 ', sum)
     if b is None:
         pass
     else:
         if sum != b.lower():
             print('校验错误')
     return sum
+
 
 def readdata(OI):
     conf_new = configparser.ConfigParser()
@@ -141,7 +143,8 @@ def OI_06000001(get):
         2)) + d_times + V_A_F + 'AA' + gonglv + 'AA' + yinshu + 'AA' + youwugpngdianneng + 'AA' + fourxiangxinwugong + 'AA' + dangqianxuliang + 'AA'
     cs = CS_new(Comm.makelist(compose))
     compose += cs + 'E5'
-    return compose, '负荷记录块 '+Comm.list2str(minus33(other_data[1:]))
+    return compose, '负荷记录块 ' + Comm.list2str(minus33(other_data[1:]))
+
 
 def plus33(message):
     newstr = ''
@@ -224,11 +227,11 @@ def deal_receive(message):
                 L = '06'
                 D = '343333333333'
                 if white[0].__contains__("-"):
-                    add= Comm.makelist((white[0].split("-"))[0])[::-1]
+                    add = Comm.makelist((white[0].split("-"))[0])[::-1]
                 else:
                     add = Comm.makelist(white[0])[::-1]
                 text = '68' + Comm.list2str(add) + '68' + reconctrlcode + L + D
-                print("text: ",text)
+                print("text: ", text)
                 cs = CS(strto0x(Comm.makelist(text)), None)
                 text = text + cs + '16'
                 print("返回发送", text)
@@ -240,6 +243,7 @@ def deal_receive(message):
             # insert
             print("stat ", stat)
             if stat == 1:
+                print("black: ",black)
                 for add in black:
                     print('add: ', add)
                     if add.find('-') > 0:
@@ -250,6 +254,11 @@ def deal_receive(message):
                         if start <= int(Comm.list2str(address[::-1])) <= end:
                             print('检测到黑名单地址范围')
                             return None
+                    else:
+                        if add == Comm.list2str(address[::-1]):
+                            print('检测到黑名单')
+                            return None
+
             elif stat == 2:
                 num = 0
                 for add in white:
@@ -267,7 +276,7 @@ def deal_receive(message):
                             num = 1
                     elif add == Comm.list2str(address[::-1]):
                         print('发现白名单')
-                        num=0
+                        num = 0
                         break
                     else:
                         num = 1
@@ -293,7 +302,7 @@ def deal_receive(message):
     data_len_ = int(message[9], 16)
     datasign = message[10:14]
     global other_data
-    other_data = message[14:data_len_ - 4 +14]
+    other_data = message[14:data_len_ - 4 + 14]
     D = Comm.list2str(datasign)
     cs = CS(strto0x(message[0:-2]), message[-2])
     OI = Comm.list2str(minus33(datasign)).upper()
@@ -312,8 +321,8 @@ def deal_receive(message):
     else:
         # if re.match("0201FF00", OI):
         #     returnstr = "3232" + "3232" * 2;
-        if re.match("06000001",OI):
-            returnstr =Comm.list2str(Comm.makelist(plus33(a[0]))[::-1])
+        if re.match("06000001", OI):
+            returnstr = Comm.list2str(Comm.makelist(plus33(a[0]))[::-1])
         elif re.match("0610", OI):
             TIME = Comm.list2str(message[15:20])
             print("time:", TIME, message[14])

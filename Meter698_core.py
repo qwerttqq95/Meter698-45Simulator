@@ -589,7 +589,7 @@ def A_ResultRecord_SEQUENCE_RSD(remain):
 
 
 def RSD(remain):
-    global relen, sele, count_re, curve_list
+    global relen, sele, count_re, curve_list,Curve_gaps_times
     if remain[0] == '01':
         sele = 1
         print('Selector 01')
@@ -604,7 +604,11 @@ def RSD(remain):
         reMessage1 = Data(remain[5], remain[6:])
         Data(reMessage1[0], reMessage1[1:])
         reMessage2 = Data(reMessage1[8], reMessage1[9:])  # 收到的冻结时间
-        count_re = Comm.time_cacl(curve_list[1], curve_list[0], Curve_gaps_times)
+        try:
+            count_re = Comm.time_cacl(curve_list[1], curve_list[0], Curve_gaps_times)
+        except:
+            print("Curve_gaps_times is None")
+            return None
         print("count_re:", count_re)
         relen = 0
         return reMessage2
