@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = UI_Meter698.Ui_MainWindow()
         self.ui.setupUi(self)
-        self.setWindowTitle('模拟表程序 v1.79.1')
+        self.setWindowTitle('模拟表程序 v1.79.2')
         self.addItem = self.GetSerialNumber()
         while 1:
             if self.addItem is None:

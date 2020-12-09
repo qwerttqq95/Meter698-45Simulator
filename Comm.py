@@ -1,5 +1,14 @@
 import re, time
 
+def ShowTime(text):
+    year = text[0:4]
+    mouth = text[4:6]
+    day = text[6:8]
+    hour = text[8:10]
+    mi=text[10:12]
+    sec = text[12:14]
+    return str(int(mouth,16))+"月"+str(int(day,16))+"日"+str(int(hour,16))+"时"+str(int(mi,16))+"分"+str(int(sec,16))+"秒"
+
 
 def time_add(ori, add):
     if add == 0:

@@ -1112,7 +1112,7 @@ class ReturnMessage():
             print('自动日冻结时标')
             global Daily_freeze  # 冻结时间
             print('newOI', newOI)
-            self.save(['50040200_20210200', '自动日冻结', ''])
+            self.save(['50040200_20210200', '自动日冻结({})'.format(Comm.ShowTime(Daily_freeze[2:])), ''])
             SequenceOf_ARecordRow(Daily_freeze)
 
         if auto_day_frozon_sign == 1 and newOI == '50050200_20210200' and sele != 9:
@@ -1124,14 +1124,14 @@ class ReturnMessage():
         if auto_day_frozon_sign == 1 and newOI == '50060200_20210200' and sele != 9:
             print('自动月冻结时标')
             print('newOI', newOI)
-            self.save(['50060200_20210200', '自动月冻结', ''])
+            self.save(['50060200_20210200', '自动月冻结({})'.format(Comm.ShowTime(Daily_freeze[2:])), ''])
             SequenceOf_ARecordRow(Daily_freeze)
 
         if auto_curve_sign == 1 and newOI == '50020200_20210200' and sele != 9:
             global curve_list, Curve_gaps_times, Curve_gaps_times_multi
             print('自动曲线时标')
             print('curve_newOI', newOI)
-            self.save(['50020200_20210200', '自动曲线冻结', ''])
+            self.save(['50020200_20210200', '自动曲线冻结({})'.format(Comm.ShowTime(curve_list[0][2:])), ''])
             print("curve_list", curve_list)
             x = Comm.time_add(curve_list[0], Curve_gaps_times_multi * Curve_gaps_times)
             print("x: ", x)
